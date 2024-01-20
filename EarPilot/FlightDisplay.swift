@@ -6,13 +6,23 @@
 //
 
 import SwiftUI
+import CoreMotion
 
 struct FlightDisplay: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
 
-#Preview {
-    FlightDisplay()
+    @State var tracker = PositionTracker()
+
+    var body: some View {
+        VStack {
+            ArtificialHorizon(tracker: tracker)
+                .aspectRatio(1, contentMode: .fit)
+
+            Button {
+                tracker.zero()
+            } label: {
+                Text("Zero")
+            }
+            .buttonStyle(.bordered)
+        }
+    }
 }
