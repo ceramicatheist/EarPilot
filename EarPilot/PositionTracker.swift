@@ -17,7 +17,7 @@ import CoreMotion
     var error: Error?
 
     init() {
-        manager.deviceMotionUpdateInterval = 0.1
+        manager.deviceMotionUpdateInterval = 1 / 60
         manager.startDeviceMotionUpdates(to: OperationQueue.main,
                                          withHandler: self.motionHandler)
     }

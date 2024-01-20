@@ -14,7 +14,7 @@ struct ArtificialHorizon: View {
 
     @State private var scene: SCNScene
     var rootNode: SCNNode
-    var zero: SCNVector4
+    var zero: SCNMatrix4
 
     init(tracker: PositionTracker) {
         self.tracker = tracker
@@ -22,7 +22,7 @@ struct ArtificialHorizon: View {
         let rootNode = scene.rootNode.childNode(withName: "Max_rootNode", recursively: true)!
         self.scene = scene
         self.rootNode = rootNode
-        self.zero = rootNode.rotation
+        zero = rootNode.transform
     }
 
     var body: some View {
@@ -31,7 +31,7 @@ struct ArtificialHorizon: View {
                   antialiasingMode: .none)
         .onChange(of: tracker.attitude) { oldValue, newValue in
             guard let quat = newValue?.quaternion else {return}
-            rootNode.rotation = zero
+            rootNode.transform = zero
             rootNode.rotate(by: SCNQuaternion(quat.x, quat.y, quat.z, -quat.w),
                             aroundTarget: SCNVector3(0, 0, 0))
         }
