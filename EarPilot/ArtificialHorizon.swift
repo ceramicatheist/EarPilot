@@ -6,44 +6,56 @@
 //
 
 import SwiftUI
-import SceneKit
 import Spatial
 
 struct ArtificialHorizon: View {
 
     private(set) var tracker: PositionTracker
 
-    @State private var scene: SCNScene
-    var rootNode: SCNNode
-    var zero: SCNMatrix4
-
     init(tracker: PositionTracker) {
         self.tracker = tracker
-        let scene = SCNScene(named: "art.scnassets/Character/max.scn")!
-        let rootNode = scene.rootNode.childNode(withName: "Max_rootNode", recursively: true)!
-        self.scene = scene
-        self.rootNode = rootNode
-        zero = rootNode.transform
     }
 
     var body: some View {
-        SceneView(scene: scene,
-                  options: [.autoenablesDefaultLighting, .rendersContinuously],
-                  antialiasingMode: .none)
-        .onChange(of: tracker.attitude) { oldValue, newValue in
-            rootNode.transform = zero
-            rootNode.rotate(by: SCNQuaternion(newValue.inverse),
-                            aroundTarget: SCNVector3(0, 0, 0))
+        let angles = tracker.attitude.eulerAngles(order: .xyz)
+        let pitch = Angle(radians: angles.angles.x)
+        let roll = Angle(radians: angles.angles.y)
+        GeometryReader { g in
+            let box = g.frame(in: .local)
+            ZStack(alignment: .center) {
+                Color.brown
+                    .frame(width: box.width * 2, height: box.height)
+                    .position(x: box.midX, y: box.maxY)
+                ladder(pitch)
+            }
+            .rotationEffect(-roll)
+        }
+        .background(.cyan)
+        .clipped()
+        .overlay(alignment: .topLeading) {
+            Text("""
+                pitch: \(pitch.degrees.rounded().formatted())
+                 roll: \(roll.degrees.rounded().formatted())
+                """)
+            .foregroundStyle(.green)
         }
     }
-}
 
-extension SCNQuaternion {
-    init(_ rot: Rotation3D) {
-        let quat = rot.quaternion
-        self = SCNQuaternion(x: Float(quat.imag.x),
-                             y: Float(quat.imag.y),
-                             z: Float(quat.imag.z),
-                             w: Float(quat.real))
+    @ViewBuilder func ladder(_ angle: Angle) -> some View
+    {
+        Text("""
+            -20
+            -15
+            -10
+            -5
+             0
+             5
+             10
+             15
+             20
+            """)
+        .multilineTextAlignment(.center)
+        .foregroundStyle(.yellow)
+        .transformEffect(.init(translationX: 0, y: -angle.degrees * 2)) // all wrong
     }
 }
