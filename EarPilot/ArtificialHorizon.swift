@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SceneKit
+import Spatial
 
 struct ArtificialHorizon: View {
 
@@ -30,10 +31,19 @@ struct ArtificialHorizon: View {
                   options: [.autoenablesDefaultLighting, .rendersContinuously],
                   antialiasingMode: .none)
         .onChange(of: tracker.attitude) { oldValue, newValue in
-            guard let quat = newValue?.quaternion else {return}
             rootNode.transform = zero
-            rootNode.rotate(by: SCNQuaternion(quat.x, quat.y, quat.z, -quat.w),
+            rootNode.rotate(by: SCNQuaternion(newValue.inverse),
                             aroundTarget: SCNVector3(0, 0, 0))
         }
+    }
+}
+
+extension SCNQuaternion {
+    init(_ rot: Rotation3D) {
+        let quat = rot.quaternion
+        self = SCNQuaternion(x: Float(quat.imag.x),
+                             y: Float(quat.imag.y),
+                             z: Float(quat.imag.z),
+                             w: Float(quat.real))
     }
 }
