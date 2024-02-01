@@ -17,10 +17,16 @@ struct FlightDisplay: View {
             ArtificialHorizon(tracker: tracker)
                 .aspectRatio(1, contentMode: .fit)
 
-            Button {
-                tracker.zero()
-            } label: {
-                Text("Zero")
+            HStack {
+                Spacer()
+                Button("Zero pitch+roll") {
+                    tracker.zero()
+                }
+                Spacer()
+                Button("Zero heading") {
+                    tracker.zeroHeading()
+                }
+                Spacer()
             }
             .buttonStyle(.bordered)
         }

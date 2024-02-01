@@ -17,27 +17,35 @@ struct ArtificialHorizon: View {
     }
 
     var body: some View {
-        let angles = tracker.attitude.eulerAngles(order: .xyz)
-        let pitch = Angle(radians: angles.angles.x)
-        let roll = Angle(radians: angles.angles.y)
         GeometryReader { g in
             let box = g.frame(in: .local)
             ZStack(alignment: .center) {
                 Color.brown
                     .frame(width: box.width * 2, height: box.height)
                     .position(x: box.midX, y: box.maxY)
-                ladder(pitch)
+                ladder(tracker.pitch.angle)
             }
-            .rotationEffect(-roll)
+            .rotationEffect(-tracker.roll.angle)
         }
         .background(.cyan)
         .clipped()
         .overlay(alignment: .topLeading) {
+            let q = tracker.attitude.quaternion
+            let dfmt = FloatingPointFormatStyle<Double>()
+                .precision(.integerAndFractionLength(integer: 3, fraction: 0))
+                .sign(strategy: .always())
+            let qfmt = FloatingPointFormatStyle<Double>()
+                .precision(.integerAndFractionLength(integer: 1, fraction: 2))
+                .sign(strategy: .always())
             Text("""
-                pitch: \(pitch.degrees.rounded().formatted())
-                 roll: \(roll.degrees.rounded().formatted())
+                pitch: \(tracker.pitch.degrees.formatted(dfmt))
+                 roll: \(tracker.roll.degrees.formatted(dfmt))
+                  yaw: \(tracker.yaw.degrees.formatted(dfmt))
+                quaternion: [\(q.real.formatted(qfmt)) \(q.imag.x.formatted(qfmt)) \
+                \(q.imag.y.formatted(qfmt)) \(q.imag.z.formatted(qfmt))]
                 """)
-            .foregroundStyle(.green)
+            .monospaced()
+            .foregroundStyle(.yellow)
         }
     }
 
@@ -55,7 +63,13 @@ struct ArtificialHorizon: View {
              20
             """)
         .multilineTextAlignment(.center)
-        .foregroundStyle(.yellow)
+        .foregroundStyle(.green)
         .transformEffect(.init(translationX: 0, y: -angle.degrees * 2)) // all wrong
+    }
+}
+
+extension Angle2D {
+    var angle: Angle {
+        Angle(radians: self.radians)
     }
 }
