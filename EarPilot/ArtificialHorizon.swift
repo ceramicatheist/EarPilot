@@ -52,15 +52,15 @@ struct ArtificialHorizon: View {
     @ViewBuilder func ladder(_ angle: Angle) -> some View
     {
         Text("""
-            -20
-            -15
-            -10
-            -5
-             0
-             5
-             10
-             15
-             20
+            ----
+            ---
+            --
+            -
+            0
+            +
+            ++
+            +++
+            ++++
             """)
         .multilineTextAlignment(.center)
         .foregroundStyle(.green)
