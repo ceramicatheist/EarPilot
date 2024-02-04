@@ -10,7 +10,7 @@ import CoreMotion
 
 struct FlightDisplay: View {
 
-    @State var tracker = PositionTracker()
+    @StateObject var tracker = PositionTracker()
 
     var body: some View {
         VStack {

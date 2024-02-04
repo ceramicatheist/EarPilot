@@ -9,11 +9,11 @@ import Foundation
 import CoreMotion
 import Spatial
 
-@Observable class PositionTracker {
+class PositionTracker: ObservableObject {
     let manager = CMMotionManager()
 
-    var attitude: Rotation3D = .identity
-    var zeroAttitude: Rotation3D?
+    @Published var attitude: Rotation3D = .identity
+    @Published var zeroAttitude: Rotation3D?
 
     var forward: RotationAxis3D?
     var rightward: RotationAxis3D?

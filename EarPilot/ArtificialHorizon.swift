@@ -10,7 +10,7 @@ import Spatial
 
 struct ArtificialHorizon: View {
 
-    private(set) var tracker: PositionTracker
+    @ObservedObject private(set) var tracker: PositionTracker
 
     init(tracker: PositionTracker) {
         self.tracker = tracker
@@ -34,18 +34,9 @@ struct ArtificialHorizon: View {
             let dfmt = FloatingPointFormatStyle<Double>()
                 .precision(.integerAndFractionLength(integer: 3, fraction: 0))
                 .sign(strategy: .always())
-            let qfmt = FloatingPointFormatStyle<Double>()
-                .precision(.integerAndFractionLength(integer: 1, fraction: 2))
-                .sign(strategy: .always())
-            Text("""
-                pitch: \(tracker.pitch.degrees.formatted(dfmt))
-                 roll: \(tracker.roll.degrees.formatted(dfmt))
-                  yaw: \(tracker.yaw.degrees.formatted(dfmt))
-                quaternion: [\(q.real.formatted(qfmt)) \(q.imag.x.formatted(qfmt)) \
-                \(q.imag.y.formatted(qfmt)) \(q.imag.z.formatted(qfmt))]
-                """)
+            Text("yaw: \(tracker.yaw.degrees.formatted(dfmt))")
             .monospaced()
-            .foregroundStyle(.yellow)
+            .foregroundStyle(.red)
         }
     }
 
@@ -63,7 +54,7 @@ struct ArtificialHorizon: View {
             ++++
             """)
         .multilineTextAlignment(.center)
-        .foregroundStyle(.green)
+        .foregroundStyle(.yellow)
         .transformEffect(.init(translationX: 0, y: -angle.degrees * 2)) // all wrong
     }
 }
