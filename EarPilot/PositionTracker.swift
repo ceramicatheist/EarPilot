@@ -12,11 +12,11 @@ import Spatial
 class PositionTracker: ObservableObject {
     let manager = CMMotionManager()
 
-    @Published var attitude: Rotation3D = .identity
-    @Published var zeroAttitude: Rotation3D?
+    @Published private(set) var attitude: Rotation3D = .identity
 
-    var forward: RotationAxis3D?
-    var rightward: RotationAxis3D?
+    private var zeroAttitude: Rotation3D?
+    private var forward: RotationAxis3D?
+    private var rightward: RotationAxis3D?
 
     var pitch: Angle2D {
         guard let rightward, let zeroAttitude else {return .zero}

@@ -11,6 +11,7 @@ import CoreMotion
 struct FlightDisplay: View {
 
     @StateObject var tracker = PositionTracker()
+    @State var talker = Talker()
 
     var body: some View {
         VStack {
@@ -29,6 +30,9 @@ struct FlightDisplay: View {
                 Spacer()
             }
             .buttonStyle(.bordered)
+        }
+        .onAppear {
+            talker.tracker = tracker
         }
     }
 }
