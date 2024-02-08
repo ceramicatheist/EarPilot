@@ -64,9 +64,9 @@
 				DACB47112B5AE9D800497C03 /* FlightDisplay.swift */,
 				DACB470F2B5AE7BC00497C03 /* PositionTracker.swift */,
 				DACB47132B5C38BB00497C03 /* ArtificialHorizon.swift */,
+				DA15FDCE2B703EDD007F65D2 /* Talker.swift */,
 				DACB47052B5AE33600497C03 /* Assets.xcassets */,
 				DACB47072B5AE33600497C03 /* Preview Content */,
-				DA15FDCE2B703EDD007F65D2 /* Talker.swift */,
 			);
 			path = EarPilot;
 			sourceTree = "<group>";

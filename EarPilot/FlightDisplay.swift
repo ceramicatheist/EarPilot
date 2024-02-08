@@ -28,11 +28,11 @@ struct FlightDisplay: View {
                     tracker.zeroHeading()
                 }
                 Spacer()
+                Button("Say something") {
+                    talker.speak((Int.random(in: 0...18) * 5).description)
+                }
             }
             .buttonStyle(.bordered)
-        }
-        .onAppear {
-            talker.tracker = tracker
         }
     }
 }
