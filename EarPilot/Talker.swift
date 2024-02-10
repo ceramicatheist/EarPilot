@@ -20,8 +20,9 @@ class Talker {
     static let voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)!
 
     let engine = AVAudioEngine()
-    let player = AVAudioPlayerNode()
+    let voicePlayer = AVAudioPlayerNode()
     let mixer = AVAudioEnvironmentNode()
+    let beeper = AVAudioUnitSampler()
 
     init() {
         let sess = AVAudioSession.sharedInstance()
@@ -31,40 +32,61 @@ class Talker {
 
         engine.attach(mixer)
         engine.connect(mixer, to: engine.outputNode, format: nil)
-        engine.attach(player)
+        engine.attach(voicePlayer)
+        engine.attach(beeper)
 
         mixer.listenerPosition = .init(x: 0, y: 0, z: 0)
         mixer.reverbParameters.enable = true
         mixer.reverbParameters.loadFactoryReverbPreset(.largeHall)
         mixer.reverbParameters.level = -20
         mixer.renderingAlgorithm = .HRTFHQ
-        player.reverbBlend = 0.4
+        voicePlayer.reverbBlend = 0.4
+        beeper.reverbBlend = 0.4
 
+        let url = Bundle.main.url(forResource: "gs_instruments", withExtension: "dls")
+        try! beeper.loadSoundBankInstrument(at: url!,
+                                             program: 1,
+                                             bankMSB: 0x79,
+                                             bankLSB: 0)
         try! engine.start()
     }
 
     func speak(_ str: String, _ position: Position = Position.allCases.randomElement()!) {
+        if !engine.isRunning { try! engine.start() }
+
         let utterance = AVSpeechUtterance(string: str + ".")
         utterance.voice = Self.voice
         utterance.rate = 0.65
 
-        player.stop()
+        voicePlayer.stop()
 
         switch(position) {
         case .left:
-            player.position = .init(x: -1, y: 0, z: 0)
+            voicePlayer.position = .init(x: -1, y: 0, z: 0)
         case .right:
-            player.position = .init(x: 1, y: 0, z: 0)
+            voicePlayer.position = .init(x: 1, y: 0, z: 0)
         case .center:
-            player.position = .init(x: 0, y: 0, z: -1)
+            voicePlayer.position = .init(x: 0, y: 0, z: -1)
         }
 
         synth.write(utterance) { [self] buf in
-            if engine.outputConnectionPoints(for: player, outputBus: 0).isEmpty {
-                engine.connect(player, to: mixer, format: buf.format)
+            if engine.outputConnectionPoints(for: voicePlayer, outputBus: 0).isEmpty {
+                engine.connect(voicePlayer, to: mixer, format: buf.format)
             }
-            player.scheduleBuffer(buf as! AVAudioPCMBuffer)
-            player.play()
+            voicePlayer.scheduleBuffer(buf as! AVAudioPCMBuffer)
+            voicePlayer.play()
+        }
+    }
+
+    func beep() {
+        if !engine.isRunning { try! engine.start() }
+        if engine.outputConnectionPoints(for: beeper, outputBus: 0).isEmpty {
+            engine.connect(beeper, to: mixer, format: beeper.outputFormat(forBus: 0))
+        }
+        let note: UInt8 = .random(in: 32...96)
+        beeper.startNote(note, withVelocity: 64, onChannel: 0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+            beeper.stopNote(note, onChannel: 0)
         }
     }
 }

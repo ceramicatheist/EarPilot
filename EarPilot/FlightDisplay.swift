@@ -31,6 +31,11 @@ struct FlightDisplay: View {
                 Button("Say something") {
                     talker.speak((Int.random(in: 0...18) * 5).description)
                 }
+                Spacer()
+                Button("Beep") {
+                    talker.beep()
+                }
+                Spacer()
             }
             .buttonStyle(.bordered)
         }
