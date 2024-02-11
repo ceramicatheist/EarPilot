@@ -16,6 +16,10 @@ struct ArtificialHorizon: View {
         self.tracker = tracker
     }
 
+    let dfmt = FloatingPointFormatStyle<Double>()
+        .precision(.integerAndFractionLength(integer: 3, fraction: 0))
+        .sign(strategy: .always())
+
     var body: some View {
         GeometryReader { g in
             let box = g.frame(in: .local)
@@ -30,10 +34,6 @@ struct ArtificialHorizon: View {
         .background(.cyan)
         .clipped()
         .overlay(alignment: .topLeading) {
-            let q = tracker.attitude.quaternion
-            let dfmt = FloatingPointFormatStyle<Double>()
-                .precision(.integerAndFractionLength(integer: 3, fraction: 0))
-                .sign(strategy: .always())
             Text("yaw: \(tracker.yaw.degrees.formatted(dfmt))")
             .monospaced()
             .foregroundStyle(.red)

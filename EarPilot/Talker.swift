@@ -36,12 +36,7 @@ class Talker {
         engine.attach(beeper)
 
         mixer.listenerPosition = .init(x: 0, y: 0, z: 0)
-        mixer.reverbParameters.enable = true
-        mixer.reverbParameters.loadFactoryReverbPreset(.largeHall)
-        mixer.reverbParameters.level = -20
         mixer.renderingAlgorithm = .HRTFHQ
-        voicePlayer.reverbBlend = 0.4
-        beeper.reverbBlend = 0.4
 
         let url = Bundle.main.url(forResource: "gs_instruments", withExtension: "dls")
         try! beeper.loadSoundBankInstrument(at: url!,

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		DA15FDCF2B703EDD007F65D2 /* Talker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA15FDCE2B703EDD007F65D2 /* Talker.swift */; };
 		DAC124B62B7825C400B582EA /* gs_instruments.dls in Resources */ = {isa = PBXBuildFile; fileRef = DAC124B52B7825C400B582EA /* gs_instruments.dls */; };
+		DAC124B82B794C0C00B582EA /* ModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC124B72B794C0C00B582EA /* ModelController.swift */; };
 		DACB47022B5AE33500497C03 /* EarPilotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB47012B5AE33500497C03 /* EarPilotApp.swift */; };
 		DACB47042B5AE33500497C03 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB47032B5AE33500497C03 /* ContentView.swift */; };
 		DACB47062B5AE33600497C03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DACB47052B5AE33600497C03 /* Assets.xcassets */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		DA15FDCE2B703EDD007F65D2 /* Talker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talker.swift; sourceTree = "<group>"; };
 		DAC124B52B7825C400B582EA /* gs_instruments.dls */ = {isa = PBXFileReference; lastKnownFileType = file; path = gs_instruments.dls; sourceTree = "<group>"; };
+		DAC124B72B794C0C00B582EA /* ModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelController.swift; sourceTree = "<group>"; };
 		DACB46FE2B5AE33500497C03 /* EarPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EarPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DACB47012B5AE33500497C03 /* EarPilotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarPilotApp.swift; sourceTree = "<group>"; };
 		DACB47032B5AE33500497C03 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 				DACB47052B5AE33600497C03 /* Assets.xcassets */,
 				DAC124B52B7825C400B582EA /* gs_instruments.dls */,
 				DACB47072B5AE33600497C03 /* Preview Content */,
+				DAC124B72B794C0C00B582EA /* ModelController.swift */,
 			);
 			path = EarPilot;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 				DA15FDCF2B703EDD007F65D2 /* Talker.swift in Sources */,
 				DACB47042B5AE33500497C03 /* ContentView.swift in Sources */,
 				DACB47122B5AE9D800497C03 /* FlightDisplay.swift in Sources */,
+				DAC124B82B794C0C00B582EA /* ModelController.swift in Sources */,
 				DACB47022B5AE33500497C03 /* EarPilotApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
