@@ -27,10 +27,6 @@ struct FlightDisplay: View {
                     model.tracker.zeroHeading()
                 }
                 Spacer()
-                Button("Say something") {
-                    model.talker.speak((Int.random(in: 0...18) * 5).description)
-                }
-                Spacer()
                 Button("Beep") {
                     model.talker.beep()
                 }
