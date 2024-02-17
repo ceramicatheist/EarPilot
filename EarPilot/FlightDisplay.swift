@@ -23,10 +23,6 @@ struct FlightDisplay: View {
                     model.tracker.zero()
                 }
                 Spacer()
-                Button("Zero heading") {
-                    model.tracker.zeroHeading()
-                }
-                Spacer()
                 Button("Beep") {
                     model.talker.beep()
                 }
