@@ -11,11 +11,13 @@ import Spatial
 
 class PositionTracker: ObservableObject {
     
-    @Published var pitch = Angle2D.zero
+    @Published private(set) var pitch = Angle2D.zero
 
-    @Published var roll = Angle2D.zero
+    @Published private(set) var roll = Angle2D.zero
 
-    @Published var yaw = Angle2D.zero
+    @Published private(set) var yaw = Angle2D.zero
+
+    @Published var offAxisAngle = Angle2D.zero
 
     private let manager = CMMotionManager()
 
@@ -29,18 +31,14 @@ class PositionTracker: ObservableObject {
             }
 
             let yawRelativeAttitude = attitude * zeroAttitude.inverse
-            yaw = yawRelativeAttitude.twistAngle(around: RotationAxis3D.z)
+            yaw = yawRelativeAttitude.twistAngle(around: .z)
 
-            let twistedZero = zeroAttitude.rotated(by: Rotation3D(angle: yaw, axis: RotationAxis3D.z))
+            let twistedZero = zeroAttitude.rotated(by: Rotation3D(angle: yaw, axis: .z))
             let relativeAttitude = attitude * twistedZero.inverse
 
-            let absoluteYaw = attitude.twist(twistAxis: RotationAxis3D.z)
-            let forward = RotationAxis3D.y.rotated(by: absoluteYaw)
-            let rightward = RotationAxis3D.x.rotated(by: absoluteYaw)
-
-            roll = relativeAttitude.twistAngle(around: forward)
-
-            pitch = relativeAttitude.twistAngle(around: rightward)
+            let absoluteYaw = attitude.twist(twistAxis: .z).rotated(by: Rotation3D(angle: offAxisAngle, axis: .z))
+            roll = relativeAttitude.twistAngle(around: .y.rotated(by: absoluteYaw))
+            pitch = relativeAttitude.twistAngle(around: .x.rotated(by: absoluteYaw))
         }
     }
 
@@ -48,7 +46,7 @@ class PositionTracker: ObservableObject {
 
     init() {
         manager.deviceMotionUpdateInterval = 1 / 60
-        manager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,
+        manager.startDeviceMotionUpdates(using: .xTrueNorthZVertical,
                                          to: OperationQueue.main,
                                          withHandler: motionHandler)
     }
