@@ -14,20 +14,19 @@ class ModelController: ObservableObject {
     let tracker = PositionTracker()
     let talker = Talker()
 
-    private lazy var sub1 = tracker.objectWillChange.sink { [weak self] in
-        self?.objectWillChange.send()
-    }
-
-    private lazy var sub2 = tracker.$roll.sink { [weak self] roll in
-        self?.updateRoll(roll)
-    }
+    private var subscriptions = [AnyCancellable]()
 
     init() {
-        _ = sub1
-        _ = sub2
+        tracker.objectWillChange.sink { [weak self] in
+            self?.objectWillChange.send()
+        }.store(in: &subscriptions)
+        tracker.$roll.sink { [weak self] roll in
+            self?.updateRoll(roll)
+        }.store(in: &subscriptions)
     }
 
     private var lastRoll: (Int, Double, Date) = (0, 0, .distantPast)
+    private var lastLeveling = true // true when rolling toward level
     let idleInterval = TimeInterval(2)
 
     private func updateRoll(_ roll: Angle2D) {
@@ -35,12 +34,14 @@ class ModelController: ObservableObject {
         let number = Int(degrees.rounded(toMultipleOf: 5))
         if number == 0 && lastRoll.0 == 0 {return}
         let now = Date()
-        if number == lastRoll.0 && now.timeIntervalSince(lastRoll.2) < idleInterval {return}
+        let leveling = abs(degrees) < abs(lastRoll.1)
+        if number == lastRoll.0 && leveling == lastLeveling && now.timeIntervalSince(lastRoll.2) < idleInterval {return}
 
         // rising or falling pitch depends on sign of roll velocity
-        let punc = abs(degrees) < abs(lastRoll.1) ? "?" : "."
+        let punc = leveling ? "?" : "."
 
         lastRoll = (number, degrees, now)
+        lastLeveling = leveling
         switch number {
         case 0:
             talker.speak("Level.", .center)
