@@ -7,8 +7,12 @@
 
 import Foundation
 import AVFoundation
+import SwiftUI
 
 class Talker {
+
+    @AppStorage("speakEnabled") var shouldSpeak = true
+    @AppStorage("beepEnabled") var shouldBeep = true
 
     enum Position: CaseIterable {
         case left
@@ -47,6 +51,7 @@ class Talker {
     }
 
     func speak(_ str: String, _ position: Position = Position.allCases.randomElement()!) {
+        guard shouldSpeak else {return}
         if !engine.isRunning { try! engine.start() }
 
         let utterance = AVSpeechUtterance(string: str + ".")
@@ -74,6 +79,7 @@ class Talker {
     }
 
     func beep() {
+        guard shouldBeep else {return}
         if !engine.isRunning { try! engine.start() }
         if engine.outputConnectionPoints(for: beeper, outputBus: 0).isEmpty {
             engine.connect(beeper, to: mixer, format: beeper.outputFormat(forBus: 0))

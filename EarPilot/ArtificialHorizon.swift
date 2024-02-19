@@ -55,7 +55,7 @@ struct ArtificialHorizon: View {
             """)
         .multilineTextAlignment(.center)
         .foregroundStyle(.yellow)
-        .transformEffect(.init(translationX: 0, y: -angle.degrees * 2)) // all wrong
+        .transformEffect(.init(translationX: 0, y: -angle.degrees * 4)) // all wrong
     }
 }
 

@@ -15,25 +15,18 @@ struct FlightDisplay: View {
 
     var body: some View {
         VStack {
-            Spacer()
-
             ArtificialHorizon(tracker: model.tracker)
                 .aspectRatio(1, contentMode: .fit)
 
             Spacer()
 
-            HStack {
-                Spacer()
-                Button("Zero pitch+roll") {
-                    model.tracker.zero()
-                }
-                Spacer()
-                Button("Beep") {
-                    model.talker.beep()
-                }
-                Spacer()
-            }
-            .buttonStyle(.bordered)
+            Toggle(isOn: model.talker.$shouldSpeak, label: {
+                Text("Speak Bank Angles")
+            })
+
+            Toggle(isOn: model.talker.$shouldBeep, label: {
+                Text("Beep Pitch Angle")
+            })
 
             Spacer()
 
@@ -46,6 +39,14 @@ struct FlightDisplay: View {
                    step: 1)
             Text("off-axis angle: \(model.tracker.offAxisAngle.degrees, format: .number.rounded())º")
             Spacer()
+            Button("Zero pitch+roll") {
+                model.tracker.zero()
+            }
+            .buttonStyle(.bordered)
+
+            Spacer()
+            Spacer()
         }
+        .padding()
     }
 }
