@@ -22,6 +22,7 @@
 /* Begin PBXFileReference section */
 		DA15FDCE2B703EDD007F65D2 /* Talker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talker.swift; sourceTree = "<group>"; };
 		DA30C1FC2B7A85F400F61B31 /* Spatial+extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Spatial+extra.swift"; sourceTree = "<group>"; };
+		DA30C1FE2B83E79D00F61B31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		DAC124B52B7825C400B582EA /* gs_instruments.dls */ = {isa = PBXFileReference; lastKnownFileType = file; path = gs_instruments.dls; sourceTree = "<group>"; };
 		DAC124B72B794C0C00B582EA /* ModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelController.swift; sourceTree = "<group>"; };
 		DACB46FE2B5AE33500497C03 /* EarPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EarPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +64,7 @@
 		DACB47002B5AE33500497C03 /* EarPilot */ = {
 			isa = PBXGroup;
 			children = (
+				DA30C1FE2B83E79D00F61B31 /* Info.plist */,
 				DACB47012B5AE33500497C03 /* EarPilotApp.swift */,
 				DACB47112B5AE9D800497C03 /* FlightDisplay.swift */,
 				DAC124B72B794C0C00B582EA /* ModelController.swift */,
@@ -299,6 +301,7 @@
 				DEVELOPMENT_TEAM = 2Q5X3USQ5H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EarPilot/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -329,6 +332,7 @@
 				DEVELOPMENT_TEAM = 2Q5X3USQ5H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EarPilot/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
