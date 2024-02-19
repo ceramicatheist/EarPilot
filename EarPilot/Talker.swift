@@ -26,7 +26,8 @@ class Talker {
     let engine = AVAudioEngine()
     let voicePlayer = AVAudioPlayerNode()
     let mixer = AVAudioEnvironmentNode()
-    let beeper = AVAudioUnitSampler()
+    let upBeeper = AVAudioUnitSampler()
+    let downBeeper = AVAudioUnitSampler()
 
     init() {
         let sess = AVAudioSession.sharedInstance()
@@ -37,17 +38,23 @@ class Talker {
         engine.attach(mixer)
         engine.connect(mixer, to: engine.outputNode, format: nil)
         engine.attach(voicePlayer)
-        engine.attach(beeper)
+        engine.attach(upBeeper)
+        engine.attach(downBeeper)
 
         mixer.listenerPosition = .init(x: 0, y: 0, z: 0)
         mixer.renderingAlgorithm = .HRTFHQ
 
         let url = Bundle.main.url(forResource: "gs_instruments", withExtension: "dls")
-        try! beeper.loadSoundBankInstrument(at: url!,
-                                             program: 1,
+        try! upBeeper.loadSoundBankInstrument(at: url!,
+                                             program: 72,
                                              bankMSB: 0x79,
                                              bankLSB: 0)
+        try! downBeeper.loadSoundBankInstrument(at: url!,
+                                                program: 71,
+                                                bankMSB: 0x79,
+                                                bankLSB: 0)
         try! engine.start()
+        speak(".")
     }
 
     func speak(_ str: String, _ position: Position = Position.allCases.randomElement()!) {
@@ -78,16 +85,27 @@ class Talker {
         }
     }
 
-    func beep() {
+    func beep(_ pitch: Int) {
         guard shouldBeep else {return}
         if !engine.isRunning { try! engine.start() }
-        if engine.outputConnectionPoints(for: beeper, outputBus: 0).isEmpty {
-            engine.connect(beeper, to: mixer, format: beeper.outputFormat(forBus: 0))
+        if engine.outputConnectionPoints(for: upBeeper, outputBus: 0).isEmpty {
+            engine.connect(upBeeper, to: mixer, format: upBeeper.outputFormat(forBus: 0))
         }
-        let note: UInt8 = .random(in: 32...96)
-        beeper.startNote(note, withVelocity: 64, onChannel: 0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
-            beeper.stopNote(note, onChannel: 0)
+        if engine.outputConnectionPoints(for: downBeeper, outputBus: 0).isEmpty {
+            engine.connect(downBeeper, to: mixer, format: upBeeper.outputFormat(forBus: 0))
+        }
+        let note: UInt8 = UInt8(69 + pitch)
+        if pitch >= 0 {
+            upBeeper.startNote(note, withVelocity: 64, onChannel: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
+                upBeeper.stopNote(note, onChannel: 0)
+            }
+        }
+        if pitch <= 0 {
+            downBeeper.startNote(note, withVelocity: 64, onChannel: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
+                downBeeper.stopNote(note, onChannel: 0)
+            }
         }
     }
 }

@@ -23,6 +23,9 @@ class ModelController: ObservableObject {
         tracker.$roll.sink { [weak self] roll in
             self?.updateRoll(roll)
         }.store(in: &subscriptions)
+        tracker.$pitch.sink { [weak self] pitch in
+            self?.updatePitch(pitch)
+        }.store(in: &subscriptions)
     }
 
     private var lastRoll: (Int, Double, Date) = (0, 0, .distantPast)
@@ -52,6 +55,20 @@ class ModelController: ObservableObject {
         default:
             talker.speak("\(number)\(punc)", .right)
         }
+    }
+
+    private var lastPitch: (Int, Date) = (0, .distantPast)
+
+    private func updatePitch(_ pitch: Angle2D) {
+
+        let degrees = pitch.degrees / 3
+        let number = Int(degrees.rounded())
+        if number == 0 && lastPitch.0 == 0 {return}
+        let now = Date()
+        if number == lastPitch.0 && now.timeIntervalSince(lastPitch.1) < idleInterval {return}
+
+        lastPitch = (number, now)
+        talker.beep(number)
     }
 }
 
