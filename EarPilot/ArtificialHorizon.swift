@@ -18,7 +18,6 @@ struct ArtificialHorizon: View {
 
     let dfmt = FloatingPointFormatStyle<Double>()
         .precision(.integerAndFractionLength(integer: 3, fraction: 0))
-        .sign(strategy: .always())
 
     var body: some View {
         GeometryReader { g in
@@ -34,7 +33,7 @@ struct ArtificialHorizon: View {
         .background(.cyan)
         .clipped()
         .overlay(alignment: .topLeading) {
-            Text("yaw: \(tracker.yaw.degrees.formatted(dfmt))")
+            Text("heading: \(tracker.yaw.degrees.formatted(dfmt))º")
             .monospaced()
             .foregroundStyle(.red)
         }

@@ -8,23 +8,25 @@
 import Foundation
 import AVFoundation
 import SwiftUI
+import Spatial
 
 class Talker {
 
     @AppStorage("speakEnabled") var shouldSpeak = true
     @AppStorage("beepEnabled") var shouldBeep = true
 
-    enum Position: CaseIterable {
-        case left
-        case right
-        case center
-    }
-
     let synth = AVSpeechSynthesizer()
     static let voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)!
 
     let engine = AVAudioEngine()
-    let voicePlayer = AVAudioPlayerNode()
+    let voicePlayers: [AVAudioPlayerNode] = [
+        AVAudioPlayerNode(),
+        AVAudioPlayerNode(),
+        AVAudioPlayerNode(),
+        AVAudioPlayerNode(),
+        AVAudioPlayerNode(),
+    ]
+    var currentPlayer: Int = 0
     let mixer = AVAudioEnvironmentNode()
     let upBeeper = AVAudioUnitSampler()
     let downBeeper = AVAudioUnitSampler()
@@ -37,9 +39,11 @@ class Talker {
 
         engine.attach(mixer)
         engine.connect(mixer, to: engine.outputNode, format: nil)
-        engine.attach(voicePlayer)
+        voicePlayers.forEach { engine.attach($0) }
         engine.attach(upBeeper)
+        upBeeper.sourceMode = .ambienceBed
         engine.attach(downBeeper)
+        downBeeper.sourceMode = .ambienceBed
 
         mixer.listenerPosition = .init(x: 0, y: 0, z: 0)
         mixer.renderingAlgorithm = .HRTFHQ
@@ -54,27 +58,28 @@ class Talker {
                                                 bankMSB: 0x79,
                                                 bankLSB: 0)
         try! engine.start()
-        speak(".")
+
+        let utterance = AVSpeechUtterance(string: ".")
+        utterance.voice = Self.voice
+        synth.write(utterance) { [self] buf in
+            voicePlayers.forEach {
+                engine.connect($0, to: mixer, format: buf.format)
+            }
+        }
     }
 
-    func speak(_ str: String, _ position: Position = Position.allCases.randomElement()!) {
+    /// angle is clockwise from 0 = straight ahead, just like flying
+    func speak(_ str: String, _ angle: Angle2D = .zero) {
         guard shouldSpeak else {return}
         if !engine.isRunning { try! engine.start() }
-
         let utterance = AVSpeechUtterance(string: str + ".")
         utterance.voice = Self.voice
         utterance.rate = 0.65
 
+        let voicePlayer = voicePlayers[currentPlayer]
+        currentPlayer = (currentPlayer + 1) % voicePlayers.count
         voicePlayer.stop()
-
-        switch(position) {
-        case .left:
-            voicePlayer.position = .init(x: -1, y: 0, z: 0)
-        case .right:
-            voicePlayer.position = .init(x: 1, y: 0, z: 0)
-        case .center:
-            voicePlayer.position = .init(x: 0, y: 0, z: -1)
-        }
+        voicePlayer.position = .init(x: Float(sin(angle.radians)), y: 0, z: -Float(cos(angle.radians)))
 
         synth.write(utterance) { [self] buf in
             if engine.outputConnectionPoints(for: voicePlayer, outputBus: 0).isEmpty {
@@ -83,6 +88,7 @@ class Talker {
             voicePlayer.scheduleBuffer(buf as! AVAudioPCMBuffer)
             voicePlayer.play()
         }
+
     }
 
     func beep(_ pitch: Int) {

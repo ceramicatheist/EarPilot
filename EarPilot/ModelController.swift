@@ -47,13 +47,13 @@ class ModelController: ObservableObject {
         lastLeveling = leveling
         switch number {
         case 0:
-            talker.speak("Level.", .center)
+            talker.speak("Level.", .zero)
 
         case ...0 :
-            talker.speak("\(abs(number))\(punc)", .left)
+            talker.speak("\(abs(number))\(punc)", Angle2D(degrees: -90))
 
         default:
-            talker.speak("\(number)\(punc)", .right)
+            talker.speak("\(number)\(punc)", Angle2D(degrees: 90))
         }
     }
 

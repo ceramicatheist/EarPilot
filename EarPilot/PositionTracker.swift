@@ -31,14 +31,18 @@ class PositionTracker: ObservableObject {
             }
 
             let yawRelativeAttitude = attitude * zeroAttitude.inverse
-            yaw = yawRelativeAttitude.twistAngle(around: .z)
+            let relativeYaw = yawRelativeAttitude.twistAngle(around: .z)
 
-            let twistedZero = zeroAttitude.rotated(by: Rotation3D(angle: yaw, axis: .z))
+            let twistedZero = zeroAttitude.rotated(by: Rotation3D(angle: relativeYaw, axis: .z))
             let relativeAttitude = attitude * twistedZero.inverse
 
-            let absoluteYaw = attitude.twist(twistAxis: .z).rotated(by: Rotation3D(angle: offAxisAngle, axis: .z))
+            let absoluteYaw = attitude.twist(twistAxis: .z).rotated(by: Rotation3D(angle: -offAxisAngle, axis: .z))
             roll = relativeAttitude.twistAngle(around: .y.rotated(by: absoluteYaw))
             pitch = relativeAttitude.twistAngle(around: .x.rotated(by: absoluteYaw))
+
+            yaw = .degrees(270) - absoluteYaw.twistAngle(around: .z)
+            while yaw.degrees < 0 { yaw += .degrees(360) }
+            while yaw.degrees > 360 { yaw -= .degrees(360) }
         }
     }
 
@@ -46,7 +50,7 @@ class PositionTracker: ObservableObject {
 
     init() {
         manager.deviceMotionUpdateInterval = 1 / 60
-        manager.startDeviceMotionUpdates(using: .xTrueNorthZVertical,
+        manager.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
                                          to: OperationQueue.main,
                                          withHandler: motionHandler)
     }
