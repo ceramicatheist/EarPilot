@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreMotion
+import SwiftUI
 import Spatial
 
 class PositionTracker: ObservableObject {
@@ -17,7 +18,17 @@ class PositionTracker: ObservableObject {
 
     @Published private(set) var yaw = Angle2D.zero
 
-    @Published var offAxisAngle = Angle2D.zero
+    var offAxisAngle: Angle2D {
+        get {
+            .degrees(offAxisAngleDegrees)
+        }
+        set {
+            offAxisAngleDegrees = newValue.degrees
+            (attitude, _) = (attitude, ())
+        }
+    }
+
+    @AppStorage("offAxisAngle") private var offAxisAngleDegrees: Double = 0
 
     private let manager = CMMotionManager()
 
