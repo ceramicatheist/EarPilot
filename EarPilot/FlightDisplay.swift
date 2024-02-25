@@ -28,6 +28,10 @@ struct FlightDisplay: View {
                 Text("Beep Pitch Angle")
             })
 
+            Toggle(isOn: model.$shouldSpeakCompass, label: {
+                Text("Speak Compass Points")
+            })
+
             Spacer()
 
             Slider(value: Binding(get: {

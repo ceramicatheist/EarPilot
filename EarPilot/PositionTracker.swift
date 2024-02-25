@@ -51,9 +51,9 @@ class PositionTracker: ObservableObject {
             roll = relativeAttitude.twistAngle(around: .y.rotated(by: absoluteYaw))
             pitch = relativeAttitude.twistAngle(around: .x.rotated(by: absoluteYaw))
 
-            yaw = .degrees(270) - absoluteYaw.twistAngle(around: .z)
-            while yaw.degrees < 0 { yaw += .degrees(360) }
-            while yaw.degrees > 360 { yaw -= .degrees(360) }
+            var yaw = (.degrees(270) - absoluteYaw.twistAngle(around: .z)).normalized
+            if yaw.degrees < 0 { yaw += .degrees(360) }
+            self.yaw = yaw
         }
     }
 

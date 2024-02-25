@@ -14,6 +14,7 @@ class ModelController: ObservableObject {
 
     @AppStorage("bankEnabled") var shouldSpeakBank = true
     @AppStorage("pitchEnabled") var shouldBeepPitch = true
+    @AppStorage("headingEnabled") var shouldSpeakCompass = true
 
     let tracker = PositionTracker()
     let talker = Talker()
@@ -29,6 +30,9 @@ class ModelController: ObservableObject {
         }.store(in: &subscriptions)
         tracker.$pitch.sink { [weak self] pitch in
             self?.updatePitch(pitch)
+        }.store(in: &subscriptions)
+        tracker.$yaw.sink { [weak self] heading in
+            self?.updateHeading(heading)
         }.store(in: &subscriptions)
     }
 
@@ -75,6 +79,45 @@ class ModelController: ObservableObject {
         guard shouldBeepPitch else {return}
         talker.beep(number)
     }
+
+    private var lastHeading: (Angle2D, Date) = (.zero, .distantPast)
+    private func updateHeading(_ heading: Angle2D) {
+        let now = Date()
+        let delta = abs(lastHeading.0.circularDifference(from: heading).degrees)
+
+        if delta < 2
+            || (delta < 5 && now.timeIntervalSince(lastHeading.1) < idleInterval)
+            || (delta < 10 && now.timeIntervalSince(lastHeading.1) < 1)
+        { return }
+
+        lastHeading = (heading, now)
+
+        guard shouldSpeakCompass else {return}
+        let compass: String
+        let angle: Angle2D
+        switch heading.degrees {
+        case 0..<45:
+            compass = "north"
+            angle = heading
+        case 45..<135:
+            compass = "east"
+            angle = heading - .degrees(90)
+        case 135..<225:
+            compass = "south"
+            angle = heading - .degrees(180)
+        case 225..<315:
+            compass = "west"
+            angle = heading - .degrees(270)
+        case 315...360:
+            compass = "north"
+            angle = heading - .degrees(360)
+        default:
+            compass = "error"
+            angle = .zero
+        }
+        print("\(heading.degrees)º \(compass) \(angle.degrees)º")
+        talker.speak(compass, .degrees(-angle.degrees * 1.25))
+    }
 }
 
 extension FloatingPoint
@@ -90,5 +133,12 @@ extension FloatingPoint
                         rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero)
     {
         self = self.rounded(toMultipleOf: x, rule: rule)
+    }
+}
+
+extension Angle2D {
+    func circularDifference(from: Angle2D) -> Angle2D {
+        Angle2D.atan2(y: sin( self - from ),
+                      x: cos( self - from ))
     }
 }
