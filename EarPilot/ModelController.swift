@@ -8,8 +8,12 @@
 import Foundation
 import Combine
 import Spatial
+import SwiftUI
 
 class ModelController: ObservableObject {
+
+    @AppStorage("bankEnabled") var shouldSpeakBank = true
+    @AppStorage("pitchEnabled") var shouldBeepPitch = true
 
     let tracker = PositionTracker()
     let talker = Talker()
@@ -45,9 +49,10 @@ class ModelController: ObservableObject {
 
         lastRoll = (number, degrees, now)
         lastLeveling = leveling
+        guard shouldSpeakBank else {return}
         switch number {
         case 0:
-            talker.speak("Level.", .zero)
+            talker.speak("Level,", .zero)
 
         case ...0 :
             talker.speak("\(abs(number))\(punc)", Angle2D(degrees: -90))
@@ -60,7 +65,6 @@ class ModelController: ObservableObject {
     private var lastPitch: (Int, Date) = (0, .distantPast)
 
     private func updatePitch(_ pitch: Angle2D) {
-
         let degrees = pitch.degrees / 3
         let number = Int(degrees.rounded())
         if number == 0 && lastPitch.0 == 0 {return}
@@ -68,6 +72,7 @@ class ModelController: ObservableObject {
         if number == lastPitch.0 && now.timeIntervalSince(lastPitch.1) < idleInterval {return}
 
         lastPitch = (number, now)
+        guard shouldBeepPitch else {return}
         talker.beep(number)
     }
 }

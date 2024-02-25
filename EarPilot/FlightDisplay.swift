@@ -20,11 +20,11 @@ struct FlightDisplay: View {
 
             Spacer()
 
-            Toggle(isOn: model.talker.$shouldSpeak, label: {
+            Toggle(isOn: model.$shouldSpeakBank, label: {
                 Text("Speak Bank Angles")
             })
 
-            Toggle(isOn: model.talker.$shouldBeep, label: {
+            Toggle(isOn: model.$shouldBeepPitch, label: {
                 Text("Beep Pitch Angle")
             })
 

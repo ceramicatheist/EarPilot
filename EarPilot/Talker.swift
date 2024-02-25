@@ -5,15 +5,10 @@
 //  Created by Rogers George on 2/4/24.
 //
 
-import Foundation
 import AVFoundation
-import SwiftUI
 import Spatial
 
 class Talker {
-
-    @AppStorage("speakEnabled") var shouldSpeak = true
-    @AppStorage("beepEnabled") var shouldBeep = true
 
     let synth = AVSpeechSynthesizer()
     static let voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)!
@@ -70,7 +65,6 @@ class Talker {
 
     /// angle is clockwise from 0 = straight ahead, just like flying
     func speak(_ str: String, _ angle: Angle2D = .zero) {
-        guard shouldSpeak else {return}
         if !engine.isRunning { try! engine.start() }
         let utterance = AVSpeechUtterance(string: str + ".")
         utterance.voice = Self.voice
@@ -92,7 +86,6 @@ class Talker {
     }
 
     func beep(_ pitch: Int) {
-        guard shouldBeep else {return}
         if !engine.isRunning { try! engine.start() }
         if engine.outputConnectionPoints(for: upBeeper, outputBus: 0).isEmpty {
             engine.connect(upBeeper, to: mixer, format: upBeeper.outputFormat(forBus: 0))
