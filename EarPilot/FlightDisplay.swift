@@ -31,6 +31,11 @@ struct FlightDisplay: View {
             Toggle(isOn: model.$shouldSpeakCompass, label: {
                 Text("Speak Compass Points")
             })
+            
+            HStack {
+                Text("using voice: \(Talker.voice?.name ?? "unspecified")")
+                Spacer()
+            }
 
             Spacer()
 

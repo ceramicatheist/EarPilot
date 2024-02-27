@@ -11,7 +11,18 @@ import Spatial
 class Talker {
 
     let synth = AVSpeechSynthesizer()
-    static let voice = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex)!
+    static let voice: AVSpeechSynthesisVoice? = {
+        if let v = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex) {
+            return v
+        }
+        let en = AVSpeechSynthesisVoice.speechVoices()
+            .filter { $0.language.starts(with: "en-") }
+            .sorted { $1.language < $0.language /* prefer en-US to en-GB */ }
+        return en.first { $0.quality == .premium } ??
+        en.first { $0.quality == .enhanced } ??
+        en.first { $0.gender == .male }
+        ?? en.first
+    }()
 
     let engine = AVAudioEngine()
     let voicePlayers: [AVAudioPlayerNode] = [

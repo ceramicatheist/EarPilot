@@ -115,8 +115,7 @@ class ModelController: ObservableObject {
             compass = "error"
             angle = .zero
         }
-        print("\(heading.degrees)º \(compass) \(angle.degrees)º")
-        talker.speak(compass, .degrees(-angle.degrees * 1.25))
+        talker.speak(compass, .degrees(-angle.degrees * 1.25 /* fudge the separation a bit wider */))
     }
 }
 
