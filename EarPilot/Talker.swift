@@ -20,8 +20,8 @@ class Talker {
             .sorted { $1.language < $0.language /* prefer en-US to en-GB */ }
         return en.first { $0.quality == .premium } ??
         en.first { $0.quality == .enhanced } ??
-        en.first { $0.gender == .male }
-        ?? en.first
+        en.first { $0.gender == .male } ??
+        en.first
     }()
 
     let engine = AVAudioEngine()
@@ -35,6 +35,7 @@ class Talker {
     var currentPlayer: Int = 0
     let mixer = AVAudioEnvironmentNode()
     let upBeeper = AVAudioUnitSampler()
+    let levelBeeper = AVAudioUnitSampler()
     let downBeeper = AVAudioUnitSampler()
 
     init() {
@@ -48,6 +49,8 @@ class Talker {
         voicePlayers.forEach { engine.attach($0) }
         engine.attach(upBeeper)
         upBeeper.sourceMode = .ambienceBed
+        engine.attach(levelBeeper)
+        levelBeeper.sourceMode = .ambienceBed
         engine.attach(downBeeper)
         downBeeper.sourceMode = .ambienceBed
 
@@ -56,13 +59,17 @@ class Talker {
 
         let url = Bundle.main.url(forResource: "gs_instruments", withExtension: "dls")
         try! upBeeper.loadSoundBankInstrument(at: url!,
-                                             program: 72,
-                                             bankMSB: 0x79,
-                                             bankLSB: 0)
+                                              program: 89,
+                                              bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+                                              bankLSB: UInt8(kAUSampler_DefaultBankLSB))
+        try! levelBeeper.loadSoundBankInstrument(at: url!,
+                                                 program: 14,
+                                                 bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+                                                 bankLSB: UInt8(kAUSampler_DefaultBankLSB))
         try! downBeeper.loadSoundBankInstrument(at: url!,
-                                                program: 71,
-                                                bankMSB: 0x79,
-                                                bankLSB: 0)
+                                                program: 93,
+                                                bankMSB: UInt8(kAUSampler_DefaultMelodicBankMSB),
+                                                bankLSB: UInt8(kAUSampler_DefaultBankLSB))
         try! engine.start()
 
         let utterance = AVSpeechUtterance(string: ".")
@@ -101,20 +108,29 @@ class Talker {
         if engine.outputConnectionPoints(for: upBeeper, outputBus: 0).isEmpty {
             engine.connect(upBeeper, to: mixer, format: upBeeper.outputFormat(forBus: 0))
         }
+        if engine.outputConnectionPoints(for: levelBeeper, outputBus: 0).isEmpty {
+            engine.connect(levelBeeper, to: mixer, format: levelBeeper.outputFormat(forBus: 0))
+        }
         if engine.outputConnectionPoints(for: downBeeper, outputBus: 0).isEmpty {
-            engine.connect(downBeeper, to: mixer, format: upBeeper.outputFormat(forBus: 0))
+            engine.connect(downBeeper, to: mixer, format: downBeeper.outputFormat(forBus: 0))
         }
         let note: UInt8 = UInt8(69 + pitch)
-        if pitch >= 0 {
+        if pitch > 0 {
             upBeeper.startNote(note, withVelocity: 64, onChannel: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
                 upBeeper.stopNote(note, onChannel: 0)
             }
         }
-        if pitch <= 0 {
+        if pitch < 0 {
             downBeeper.startNote(note, withVelocity: 64, onChannel: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
                 downBeeper.stopNote(note, onChannel: 0)
+            }
+        }
+        if pitch == 0 {
+            levelBeeper.startNote(note, withVelocity: 64, onChannel: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [self] in
+                levelBeeper.stopNote(note, onChannel: 0)
             }
         }
     }
