@@ -37,6 +37,7 @@ struct ArtificialHorizon: View {
             .monospaced()
             .foregroundStyle(.red)
         }
+        .accessibilityHidden(true)
     }
 
     @ViewBuilder func ladder(_ angle: Angle) -> some View

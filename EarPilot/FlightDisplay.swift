@@ -39,16 +39,30 @@ struct FlightDisplay: View {
 
             Spacer()
 
-            Slider(value: Binding(get: {
+            let degreeBinding = Binding(get: {
                 model.tracker.offAxisAngle.degrees
             }, set: {
                 model.tracker.offAxisAngle = Angle2D(degrees: $0)
-            }),
-                   in: -45 ... 45,
-                   step: 1)
-            Text("off-axis angle: \(model.tracker.offAxisAngle.degrees, format: .number.rounded())º")
+            })
+            VStack {
+                Slider(value: degreeBinding,
+                       in: -45 ... 45,
+                       step: 1,
+                       label: { EmptyView() },
+                       minimumValueLabel: { Text("-45º") },
+                       maximumValueLabel: { Text("45º") })
+                Text("off-axis angle: \(model.tracker.offAxisAngle.degrees, format: .number.rounded())º")
+            }
+            .accessibilityRepresentation {
+                Slider(value: degreeBinding,
+                       in: -45 ... 45,
+                       step: 1,
+                       label: { Text("off-axis angle") })
+                .accessibilityValue("\(model.tracker.offAxisAngle.degrees, format: .number.rounded())º")
+            }
+
             Spacer()
-            Button("Zero pitch+roll") {
+            Button("Zero pitch and roll") {
                 model.tracker.zero()
             }
             .buttonStyle(.bordered)
