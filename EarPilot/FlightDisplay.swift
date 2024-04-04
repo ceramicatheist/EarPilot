@@ -12,6 +12,7 @@ import Spatial
 struct FlightDisplay: View {
 
     @StateObject var model = ModelController()
+    @State var dummy = false
 
     var body: some View {
         VStack {
@@ -31,11 +32,26 @@ struct FlightDisplay: View {
             Toggle(isOn: model.$shouldSpeakCompass, label: {
                 Text("Speak Compass Points")
             })
-            
-            HStack {
-                Text("using voice: \(Talker.voice?.name ?? "unspecified")")
-                Spacer()
-            }
+
+            LabeledContent {
+                let voiceBinding = Binding(get: {
+                    model.talker.voice?.identifier ?? ""
+                },
+                                          set: { nv in
+                    model.talker.voice = model.talker.voices.first(where: { $0.identifier == nv })
+                    dummy.toggle()
+                })
+                Picker(selection: voiceBinding) {
+                    ForEach(model.talker.voices) {
+                        Text("\($0.name)").tag($0.identifier)
+                        let _ = dummy
+                    }
+                } label: {
+                    Text("using voice: \(model.talker.voice?.name ?? "unspecified")")
+                }
+            } label: {
+                Text("Voice:")
+            }.pickerStyle(.menu)
 
             Spacer()
 

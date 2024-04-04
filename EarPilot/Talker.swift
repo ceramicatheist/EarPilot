@@ -7,22 +7,38 @@
 
 import AVFoundation
 import Spatial
+import SwiftUI
 
 class Talker {
 
     let synth = AVSpeechSynthesizer()
-    static let voice: AVSpeechSynthesisVoice? = {
-        if let v = AVSpeechSynthesisVoice(identifier: AVSpeechSynthesisVoiceIdentifierAlex) {
-            return v
-        }
-        let en = AVSpeechSynthesisVoice.speechVoices()
+
+    let voices: [AVSpeechSynthesisVoice] = {
+        AVSpeechSynthesisVoice.speechVoices()
             .filter { $0.language.starts(with: "en-") }
+            .filter { !$0.voiceTraits.contains(.isNoveltyVoice) }
             .sorted { $1.language < $0.language /* prefer en-US to en-GB */ }
-        return en.first { $0.quality == .premium } ??
-        en.first { $0.quality == .enhanced } ??
-        en.first { $0.gender == .male } ??
-        en.first
     }()
+
+    @AppStorage("voice") var voiceIdentifier: String = ""
+
+    var voice: AVSpeechSynthesisVoice? {
+        get {
+            var voice = voices.first { $0.identifier == self.voiceIdentifier }
+            if voice == nil {
+                voice = voices.first { $0.quality == .premium } ??
+                voices.first { $0.quality == .enhanced } ??
+                voices.first { $0.identifier == AVSpeechSynthesisVoiceIdentifierAlex } ??
+                voices.first { $0.gender == .male } ??
+                voices.first
+                self.voiceIdentifier = voice?.identifier ?? ""
+            }
+            return voice
+        }
+        set {
+            voiceIdentifier = newValue?.identifier ?? ""
+        }
+    }
 
     let engine = AVAudioEngine()
     let voicePlayers: [AVAudioPlayerNode] = [
@@ -73,7 +89,7 @@ class Talker {
         try! engine.start()
 
         let utterance = AVSpeechUtterance(string: ".")
-        utterance.voice = Self.voice
+        utterance.voice = voice
         synth.write(utterance) { [self] buf in
             voicePlayers.forEach {
                 engine.connect($0, to: mixer, format: buf.format)
@@ -85,7 +101,7 @@ class Talker {
     func speak(_ str: String, _ angle: Angle2D = .zero) {
         if !engine.isRunning { try! engine.start() }
         let utterance = AVSpeechUtterance(string: str + ".")
-        utterance.voice = Self.voice
+        utterance.voice = voice
         utterance.rate = 0.65
 
         let voicePlayer = voicePlayers[currentPlayer]
@@ -134,4 +150,8 @@ class Talker {
             }
         }
     }
+}
+
+extension AVSpeechSynthesisVoice: Identifiable {
+    public var id: String { identifier }
 }
