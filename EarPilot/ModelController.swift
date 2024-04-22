@@ -15,6 +15,7 @@ class ModelController: ObservableObject {
     @AppStorage("bankEnabled") var shouldSpeakBank = true
     @AppStorage("pitchEnabled") var shouldBeepPitch = true
     @AppStorage("headingEnabled") var shouldSpeakCompass = true
+    @AppStorage("coordinationEnabled") var shouldSoundCoordination = true
 
     let tracker = PositionTracker()
     let talker = Talker()
@@ -26,7 +27,7 @@ class ModelController: ObservableObject {
             self?.objectWillChange.send()
         }.store(in: &subscriptions)
         tracker.$roll.sink { [weak self] roll in
-            self?.updateRoll(roll)
+            self?.updateRoll(roll, self?.tracker.coordination ?? 0)
         }.store(in: &subscriptions)
         tracker.$pitch.sink { [weak self] pitch in
             self?.updatePitch(pitch)
@@ -40,7 +41,7 @@ class ModelController: ObservableObject {
     private var lastLeveling = true // true when rolling toward level
     let idleInterval = TimeInterval(2)
 
-    private func updateRoll(_ roll: Angle2D) {
+    private func updateRoll(_ roll: Angle2D, _ coordination: Double) {
         let degrees = roll.degrees
         let number = Int(degrees.rounded(toMultipleOf: 5))
         if number == 0 && lastRoll.0 == 0 {return}
@@ -54,15 +55,16 @@ class ModelController: ObservableObject {
         lastRoll = (number, degrees, now)
         lastLeveling = leveling
         guard shouldSpeakBank else {return}
+        let adjust = shouldSoundCoordination ? coordination : 0
         switch number {
         case 0:
             talker.speak("Level,", .zero)
 
         case ...0 :
-            talker.speak("\(abs(number))\(punc)", Angle2D(degrees: -90))
+            talker.speak("\(abs(number))\(punc)", Angle2D(degrees: -90), pitchShift: adjust)
 
         default:
-            talker.speak("\(number)\(punc)", Angle2D(degrees: 90))
+            talker.speak("\(number)\(punc)", Angle2D(degrees: 90), pitchShift: -adjust)
         }
     }
 

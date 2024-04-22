@@ -29,6 +29,10 @@ struct FlightDisplay: View {
                 Text("Speak Bank Angles")
             })
 
+            Toggle(isOn: model.$shouldSoundCoordination) {
+                Text("Change voice for slip/skid")
+            }
+
             Toggle(isOn: model.$shouldBeepPitch, label: {
                 Text("Beep Pitch Angle")
             })

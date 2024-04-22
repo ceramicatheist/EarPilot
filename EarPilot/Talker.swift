@@ -98,11 +98,12 @@ class Talker {
     }
 
     /// angle is clockwise from 0 = straight ahead, just like flying
-    func speak(_ str: String, _ angle: Angle2D = .zero) {
+    func speak(_ str: String, _ angle: Angle2D = .zero, pitchShift: Double = 0) {
         if !engine.isRunning { try! engine.start() }
         let utterance = AVSpeechUtterance(string: str + ".")
         utterance.voice = voice
         utterance.rate = 0.65
+        utterance.pitchMultiplier = Float(1 + (pitchShift > 0 ? pitchShift * 2 : pitchShift))
 
         let voicePlayer = voicePlayers[currentPlayer]
         currentPlayer = (currentPlayer + 1) % voicePlayers.count
