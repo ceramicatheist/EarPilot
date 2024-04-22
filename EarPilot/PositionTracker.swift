@@ -18,6 +18,8 @@ class PositionTracker: ObservableObject {
 
     @Published private(set) var yaw = Angle2D.zero
 
+    @Published private(set) var coordination = Double(0)
+
     var offAxisAngle: Angle2D {
         get {
             .degrees(offAxisAngleDegrees)
@@ -75,9 +77,15 @@ class PositionTracker: ObservableObject {
         let att = Rotation3D(motion.attitude.quaternion)
         if zeroAttitude == nil { zeroAttitude = att }
         self.attitude = att
+        let coord = Vector3D(x: motion.gravity.x + motion.userAcceleration.x,
+                             y: motion.gravity.y + motion.userAcceleration.y,
+                             z: motion.gravity.z + motion.userAcceleration.z).rotated(by: zeroAttitude!).y
+        let beta = Double(0.1)
+        coordination = (coord * beta) + (coordination * (1 - beta))
     }
 
     func zero() {
         zeroAttitude = nil
+        coordination = 0
     }
 }

@@ -18,6 +18,10 @@ struct FlightDisplay: View {
         VStack {
             ArtificialHorizon(tracker: model.tracker)
                 .aspectRatio(1, contentMode: .fit)
+                .overlay(alignment: .bottom) {
+                    TurnCoordinator(coordination: model.tracker.coordination)
+                        .padding()
+                }
 
             Spacer()
 
