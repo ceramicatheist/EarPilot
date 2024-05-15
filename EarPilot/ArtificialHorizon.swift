@@ -33,7 +33,7 @@ struct ArtificialHorizon: View {
         .background(.cyan)
         .clipped()
         .overlay(alignment: .topLeading) {
-            Text("heading: \(tracker.yaw.degrees.formatted(dfmt))º")
+            Text("heading: \(tracker.heading.degrees.formatted(dfmt))º")
             .monospaced()
             .foregroundStyle(.red)
         }

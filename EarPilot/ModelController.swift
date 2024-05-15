@@ -32,7 +32,7 @@ class ModelController: ObservableObject {
         tracker.$pitch.sink { [weak self] pitch in
             self?.updatePitch(pitch)
         }.store(in: &subscriptions)
-        tracker.$yaw.sink { [weak self] heading in
+        tracker.$heading.sink { [weak self] heading in
             self?.updateHeading(heading)
         }.store(in: &subscriptions)
     }
