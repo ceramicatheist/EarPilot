@@ -1,0 +1,16 @@
+videos/
+xcuserdata/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+.build/
+.DS_Store
+._*
+*.alias
+*.orig
+
+# auto generated versioning file
+BuildVersion.xcconfig
