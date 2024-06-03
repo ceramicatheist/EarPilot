@@ -60,6 +60,7 @@ class PositionTracker: ObservableObject {
     }
 
     private var zeroAttitude: Rotation3D?
+    private var zeroAccel: CMAccelerometerData?
 
     init() {
         manager.deviceMotionUpdateInterval = 1 / 30
@@ -70,6 +71,9 @@ class PositionTracker: ObservableObject {
         header.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
                                         to: .main,
                                         withHandler: headingHandler)
+        manager.accelerometerUpdateInterval = 1 / 30
+        manager.startAccelerometerUpdates(to: .main,
+                                          withHandler: accelHandler)
     }
 
     func motionHandler(_ motion: CMDeviceMotion?, _ err: Error?) {
@@ -81,11 +85,6 @@ class PositionTracker: ObservableObject {
         let att = Rotation3D(motion.attitude.quaternion)
         if zeroAttitude == nil { zeroAttitude = att }
         self.attitude = att
-        let coord = Vector3D(x: motion.gravity.x + motion.userAcceleration.x,
-                             y: motion.gravity.y + motion.userAcceleration.y,
-                             z: motion.gravity.z + motion.userAcceleration.z).rotated(by: zeroAttitude!).y
-        let beta = Double(0.05)
-        coordination = (coord * beta) + (coordination * (1 - beta))
     }
 
     func headingHandler(_ motion: CMDeviceMotion?, _ err: Error?) {
@@ -97,6 +96,21 @@ class PositionTracker: ObservableObject {
         if deg < 0 { deg += 360 }
         if deg > 360 { deg -= 360 }
         heading = .init(degrees: deg)
+    }
+
+    func accelHandler(_ accel: CMAccelerometerData?, _ err: Error?) {
+        guard let accel else {
+            zeroAccel = nil
+            coordination = 0
+            return
+        }
+        if zeroAccel == nil { zeroAccel = accel }
+        guard let zeroAccel else { return /* tsnh */ }
+
+        let x = accel.acceleration.x - zeroAccel.acceleration.x
+
+        let beta = Double(0.1)
+        coordination = (x * beta) + (coordination * (1 - beta))
     }
 
     func zero() {
