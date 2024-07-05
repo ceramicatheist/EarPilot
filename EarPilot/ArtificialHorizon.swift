@@ -33,9 +33,12 @@ struct ArtificialHorizon: View {
         .background(.cyan)
         .clipped()
         .overlay(alignment: .topLeading) {
-            Text("heading: \(tracker.heading.degrees.formatted(dfmt))º")
+            VStack(alignment: .leading) {
+                Text("heading: \(tracker.heading.degrees.formatted(dfmt))º")
+                Text("rate of climb: \(tracker.rateOfClimb.formatted(.number.sign(strategy: .always()).precision(.fractionLength(0...0)))) ft/min")
+            }
             .monospaced()
-            .foregroundStyle(.red)
+            .foregroundStyle(.pink)
         }
         .accessibilityHidden(true)
     }

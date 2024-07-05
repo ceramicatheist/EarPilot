@@ -22,6 +22,8 @@ class PositionTracker: ObservableObject {
 
     @Published private(set) var coordination = Double(0)
 
+    @Published private(set) var rateOfClimb = Double(0) // feet/min
+
     var offAxisAngle: Angle2D {
         get {
             .degrees(offAxisAngleDegrees)
@@ -36,6 +38,7 @@ class PositionTracker: ObservableObject {
 
     private let manager = CMMotionManager()
     private let header = CMMotionManager()
+    private let altimeter = CMAltimeter()
 
     private var attitude: Rotation3D = .identity {
         didSet {
@@ -62,6 +65,8 @@ class PositionTracker: ObservableObject {
     private var zeroAttitude: Rotation3D?
     private var zeroAccel: CMAccelerometerData?
 
+    private var alts: [CMAltitudeData] = []
+
     init() {
         manager.deviceMotionUpdateInterval = 1 / 30
         manager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,
@@ -74,6 +79,7 @@ class PositionTracker: ObservableObject {
         manager.accelerometerUpdateInterval = 1 / 30
         manager.startAccelerometerUpdates(to: .main,
                                           withHandler: accelHandler)
+        altimeter.startRelativeAltitudeUpdates(to: .main, withHandler: altitudeHandler)
     }
 
     func motionHandler(_ motion: CMDeviceMotion?, _ err: Error?) {
@@ -111,6 +117,34 @@ class PositionTracker: ObservableObject {
 
         let beta = Double(0.1)
         coordination = (x * beta) + (coordination * (1 - beta))
+    }
+
+    func altitudeHandler(_ alt: CMAltitudeData?, _ err: Error?) {
+        guard let alt else {
+            rateOfClimb = 0
+            return
+        }
+        alts.append(alt)
+        alts = alts.suffix(3)
+        let metersPerSec: Double
+        switch alts.count {
+        case 3:
+            let c1 = alts[0].relativeAltitude.doubleValue
+            let c2 = alts[1].relativeAltitude.doubleValue * -4
+            let c3 = alts[2].relativeAltitude.doubleValue * 3
+            let deltaT = alts[2].timestamp - alts[0].timestamp // assume alts[1] is about in the middle
+            metersPerSec = deltaT > 0 ? (c1 + c2 + c3) / deltaT : 0
+        case 2:
+            let deltaY = alts[1].relativeAltitude.doubleValue - alts[0].relativeAltitude.doubleValue
+            let deltaT = alts[1].timestamp - alts[0].timestamp
+            metersPerSec = deltaT > 0 ? deltaY / deltaT : 0
+        default:
+            metersPerSec = 0
+        }
+        let metersPerMinute = metersPerSec * 60
+        let fpm = Measurement(value: metersPerMinute, unit: UnitLength.meters).converted(to: UnitLength.feet).value
+        let beta = Double(0.5)
+        rateOfClimb = (fpm * beta) + (rateOfClimb * (1 - beta))
     }
 
     func zero() {
