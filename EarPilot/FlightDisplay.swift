@@ -41,6 +41,15 @@ struct FlightDisplay: View {
                 Text("Speak Compass Points")
             })
 
+            Spacer()
+
+            Button("Zero pitch and roll") {
+                model.tracker.zero()
+            }
+            .buttonStyle(.bordered)
+
+            Spacer()
+
             LabeledContent {
                 let voiceBinding = Binding(get: {
                     model.talker.voice?.identifier ?? ""
@@ -61,38 +70,25 @@ struct FlightDisplay: View {
                 Text("Voice:")
             }.pickerStyle(.menu)
 
-            Spacer()
+            LabeledContent {
+                let degreeBinding = Binding(get: {
+                    model.tracker.offAxisAngle.degrees
+                }, set: {
+                    model.tracker.offAxisAngle = Angle2D(degrees: $0)
+                })
 
-            let degreeBinding = Binding(get: {
-                model.tracker.offAxisAngle.degrees
-            }, set: {
-                model.tracker.offAxisAngle = Angle2D(degrees: $0)
-            })
-            VStack {
-                Slider(value: degreeBinding,
-                       in: -45 ... 45,
-                       step: 1,
-                       label: { EmptyView() },
-                       minimumValueLabel: { Text("-45º") },
-                       maximumValueLabel: { Text("45º") })
-                Text("off-axis angle: \(model.tracker.offAxisAngle.degrees, format: .number.rounded())º")
-            }
-            .accessibilityRepresentation {
-                Slider(value: degreeBinding,
-                       in: -45 ... 45,
-                       step: 1,
-                       label: { Text("off-axis angle") })
-                .accessibilityValue("\(model.tracker.offAxisAngle.degrees, format: .number.rounded())º")
-            }
+                Picker(selection: degreeBinding) {
+                    ForEach(Array(stride(from: -30.0, to: 30.0, by: 5.0)), id: \.self) {
+                        Text("\(abs($0).formatted(.number.rounded()))º \($0 < 0 ? "left" : $0 > 0 ? "right" : "")").tag($0)
+                        let _ = dummy
+                    }
+                } label: {
+                    Text("Off-Axis Mount Angle:")
+                }
 
-            Spacer()
-            Button("Zero pitch and roll") {
-                model.tracker.zero()
-            }
-            .buttonStyle(.bordered)
-
-            Spacer()
-            Spacer()
+            } label: {
+                Text("Off-Axis Mount Angle:")
+            }.pickerStyle(.menu)
         }
         .padding()
     }

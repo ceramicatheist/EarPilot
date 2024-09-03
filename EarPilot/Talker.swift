@@ -15,25 +15,19 @@ class Talker {
 
     let voices: [AVSpeechSynthesisVoice] = {
         AVSpeechSynthesisVoice.speechVoices()
-            .filter { $0.language.starts(with: "en-") }
+            .filter { $0.language.starts(with: "en-US") }
             .filter { !$0.voiceTraits.contains(.isNoveltyVoice) }
-            .sorted { $1.language < $0.language /* prefer en-US to en-GB */ }
+            .sorted { $0.name < $1.name }
+            .sorted { $1.quality.rawValue < $0.quality.rawValue }
     }()
 
     @AppStorage("voice") var voiceIdentifier: String = ""
 
     var voice: AVSpeechSynthesisVoice? {
         get {
-            var voice = voices.first { $0.identifier == self.voiceIdentifier }
-            if voice == nil {
-                voice = voices.first { $0.quality == .premium } ??
-                voices.first { $0.quality == .enhanced } ??
-                voices.first { $0.identifier == AVSpeechSynthesisVoiceIdentifierAlex } ??
-                voices.first { $0.gender == .male } ??
-                voices.first
-                self.voiceIdentifier = voice?.identifier ?? ""
-            }
-            return voice
+            voices.first { $0.identifier == self.voiceIdentifier }
+            ?? voices.first { $0.identifier == AVSpeechSynthesisVoiceIdentifierAlex }
+            ?? voices.first
         }
         set {
             voiceIdentifier = newValue?.identifier ?? ""
