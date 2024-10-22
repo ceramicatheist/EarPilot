@@ -149,6 +149,7 @@ class PositionTracker: ObservableObject {
 
     func zero() {
         zeroAttitude = nil
+        zeroAccel = nil
         coordination = 0
     }
 }
