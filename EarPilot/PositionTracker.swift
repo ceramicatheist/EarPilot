@@ -72,7 +72,7 @@ class PositionTracker: ObservableObject {
         manager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,
                                          to: .main,
                                          withHandler: motionHandler)
-        header.deviceMotionUpdateInterval = 1 / 4
+        header.deviceMotionUpdateInterval = 1 / 10
         header.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
                                         to: .main,
                                         withHandler: headingHandler)

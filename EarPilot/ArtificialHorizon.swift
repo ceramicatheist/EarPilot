@@ -48,10 +48,12 @@ struct ArtificialHorizon: View {
         .background(.cyan)
         .clipped()
         .overlay(alignment: .topLeading) {
-            VStack(alignment: .leading) {
-                Text("heading: \(tracker.heading.degrees.formatted(dfmt))º")
+            VStack(alignment: .center) {
+                compass(heading: tracker.heading, degreeScale: 2)
+
                 Text("rate of climb: \(tracker.rateOfClimb.formatted(.number.sign(strategy: .always()).precision(.fractionLength(0...0)))) ft/min")
             }
+            .frame(maxWidth: .infinity)
             .monospaced()
             .foregroundStyle(.pink)
         }
@@ -83,6 +85,38 @@ struct ArtificialHorizon: View {
                     .offset(y: Double(deg - 5) * degreeScale)
             }
             .font(.footnote)
+        }
+        .foregroundStyle(.white)
+    }
+
+    @ViewBuilder func compass(heading: Angle2D, degreeScale: Double) -> some View
+    {
+        VStack {
+            ZStack(alignment: .center) {
+                ForEach(Array(stride(from: -180, through: 540, by: 15)), id:\.self) { deg in
+                    VStack(spacing: 0) {
+                        switch deg {
+                        case 0, 360:
+                            Text("N").bold()
+                        case 90:
+                            Text("E").bold()
+                        case 180:
+                            Text("S").bold()
+                        case 270:
+                            Text("W").bold()
+                        case _ where (deg + 360) % 10 != 0:
+                            Text(" ")
+                        default:
+                            Text(((deg + 360) % 360).description)
+                        }
+                        Rectangle().frame(width: 1, height: 5)
+                    }
+                    .offset(x: Double(deg) * degreeScale)
+                }
+                .font(.footnote)
+            }
+            .offset(x: -heading.degrees * degreeScale)
+            Image(systemName: "chevron.up")
         }
         .foregroundStyle(.white)
     }
