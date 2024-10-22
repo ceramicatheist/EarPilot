@@ -24,11 +24,26 @@ struct ArtificialHorizon: View {
             let box = g.frame(in: .local)
             ZStack(alignment: .center) {
                 Color.brown
-                    .frame(width: box.width * 2, height: box.height)
-                    .position(x: box.midX, y: box.maxY)
-                ladder(tracker.pitch.angle)
+                    .frame(width: box.width * 2, height: box.height * 3)
+                    .position(x: box.midX, y: box.height * 2)
+                    .transformEffect(.init(translationX: 0, y: tracker.pitch.angle.degrees * 4))
+                    .rotationEffect(-tracker.roll.angle)
+
+                ladder(degreeScale: 4)
+                    .rotationEffect(-tracker.roll.angle)
+
+                Path {
+                    $0.move(to: CGPoint(x: -box.width/4, y: 0))
+                    $0.addArc(center: .zero, radius: 15, startAngle: .radians(.pi), endAngle: .radians(3 * .pi / 4), clockwise: true)
+                    $0.move(to: CGPoint(x: box.width/4, y: 0))
+                    $0.addArc(center: .zero, radius: 15, startAngle: .zero, endAngle: .radians(.pi / 4), clockwise: false)
+                    $0.move(to: .zero)
+                    $0.addEllipse(in: CGRect(x: -3, y: -3, width: 6, height: 6))
+                }
+                .strokedPath(.init(lineWidth: 2))
+                .frame(width: 1, height: 1, alignment: .center)
+                .foregroundStyle(.yellow)
             }
-            .rotationEffect(-tracker.roll.angle)
         }
         .background(.cyan)
         .clipped()
@@ -43,22 +58,33 @@ struct ArtificialHorizon: View {
         .accessibilityHidden(true)
     }
 
-    @ViewBuilder func ladder(_ angle: Angle) -> some View
+    @ViewBuilder func ladder(degreeScale: Double) -> some View
     {
-        Text("""
-            ----
-            ---
-            --
-            -
-            0
-            +
-            ++
-            +++
-            ++++
-            """)
-        .multilineTextAlignment(.center)
-        .foregroundStyle(.yellow)
-        .transformEffect(.init(translationX: 0, y: -angle.degrees * 4)) // all wrong
+        ZStack(alignment: .center) {
+            ForEach([10, 20, 30], id: \.self) { deg in
+                HStack {
+                    Text(deg.description).hidden()
+                    Rectangle().frame(width: Double(deg * 2), height: 1)
+                    Text(deg.description)
+                }
+                .offset(y: -Double(deg) * degreeScale)
+
+                Rectangle().frame(width: Double(deg / 2), height: 1)
+                    .offset(y: -Double(deg - 5) * degreeScale)
+
+                HStack {
+                    Text(deg.description).hidden()
+                    Rectangle().frame(width: Double(deg * 2), height: 1)
+                    Text(deg.description)
+                }
+                .offset(y: Double(deg) * degreeScale)
+
+                Rectangle().frame(width: Double(deg / 2), height: 1)
+                    .offset(y: Double(deg - 5) * degreeScale)
+            }
+            .font(.footnote)
+        }
+        .foregroundStyle(.white)
     }
 }
 

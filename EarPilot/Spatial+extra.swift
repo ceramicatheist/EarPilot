@@ -35,7 +35,7 @@ extension Rotation3D {
     }
 }
 
-extension RotationAxis3D: Rotatable3D {
+extension RotationAxis3D: @retroactive Rotatable3D {
 
     public func rotated(by rotation: Rotation3D) -> RotationAxis3D {
         Self(rotation * Vector3D(vector: self.vector))

@@ -147,6 +147,6 @@ class Talker {
     }
 }
 
-extension AVSpeechSynthesisVoice: Identifiable {
+extension AVSpeechSynthesisVoice: @retroactive Identifiable {
     public var id: String { identifier }
 }
