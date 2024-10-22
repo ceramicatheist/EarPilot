@@ -22,6 +22,7 @@ struct FlightDisplay: View {
                     TurnCoordinator(coordination: model.tracker.coordination)
                         .padding()
                 }
+                .padding(.horizontal, -15)
 
             Spacer()
 
@@ -29,9 +30,9 @@ struct FlightDisplay: View {
                 Text("Speak Bank Angles")
             })
 
-            Toggle(isOn: model.$shouldSoundCoordination) {
-                Text("Change voice for slip/skid")
-            }
+//            Toggle(isOn: model.$shouldSoundCoordination) {
+//                Text("Change voice for slip/skid")
+//            }
 
             Toggle(isOn: model.$shouldBeepPitch, label: {
                 Text("Beep Pitch Angle")
@@ -90,6 +91,6 @@ struct FlightDisplay: View {
                 Text("Off-Axis Mount Angle:")
             }.pickerStyle(.menu)
         }
-        .padding()
+        .padding(15)
     }
 }

@@ -30,6 +30,7 @@ struct ArtificialHorizon: View {
                     .rotationEffect(-tracker.roll.angle)
 
                 ladder(degreeScale: 4)
+                    .transformEffect(.init(translationX: 0, y: tracker.pitch.angle.degrees * 4))
                     .rotationEffect(-tracker.roll.angle)
 
                 Path {
@@ -98,22 +99,26 @@ struct ArtificialHorizon: View {
                         switch deg {
                         case 0, 360:
                             Text("N").bold()
+                                .font(.caption)
                         case 90:
                             Text("E").bold()
+                                .font(.caption)
                         case 180:
                             Text("S").bold()
+                                .font(.caption)
                         case 270:
                             Text("W").bold()
+                                .font(.caption)
                         case _ where (deg + 360) % 10 != 0:
-                            Text(" ")
+                            Text(" ").font(.footnote)
                         default:
                             Text(((deg + 360) % 360).description)
+                                .font(.caption2)
                         }
                         Rectangle().frame(width: 1, height: 5)
                     }
                     .offset(x: Double(deg) * degreeScale)
                 }
-                .font(.footnote)
             }
             .offset(x: -heading.degrees * degreeScale)
             Image(systemName: "chevron.up")

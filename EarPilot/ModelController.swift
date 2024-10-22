@@ -15,7 +15,8 @@ class ModelController: ObservableObject {
     @AppStorage("bankEnabled") var shouldSpeakBank = true
     @AppStorage("pitchEnabled") var shouldBeepPitch = true
     @AppStorage("headingEnabled") var shouldSpeakCompass = true
-    @AppStorage("coordinationEnabled") var shouldSoundCoordination = true
+    //@AppStorage("coordinationEnabled") var shouldSoundCoordination = true
+    let shouldSoundCoordination = true
 
     let tracker = PositionTracker()
     let talker = Talker()
