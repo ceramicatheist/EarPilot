@@ -29,7 +29,7 @@ struct ArtificialHorizon: View {
                     .transformEffect(.init(translationX: 0, y: tracker.pitch.angle.degrees * 4))
                     .rotationEffect(-tracker.roll.angle)
 
-                ladder(degreeScale: 4)
+                pitchLadder(degreeScale: 4)
                     .transformEffect(.init(translationX: 0, y: tracker.pitch.angle.degrees * 4))
                     .rotationEffect(-tracker.roll.angle)
 
@@ -48,20 +48,18 @@ struct ArtificialHorizon: View {
         }
         .background(.cyan)
         .clipped()
-        .overlay(alignment: .topLeading) {
-            VStack(alignment: .center) {
-                compass(heading: tracker.heading, degreeScale: 2)
-
-                Text("rate of climb: \(tracker.rateOfClimb.formatted(.number.sign(strategy: .always()).precision(.fractionLength(0...0)))) ft/min")
-            }
-            .frame(maxWidth: .infinity)
-            .monospaced()
-            .foregroundStyle(.pink)
+        .overlay(alignment: .top) {
+            compass(heading: tracker.heading, degreeScale: 2)
+                .foregroundStyle(.white)
+        }
+        .overlay(alignment: .trailing) {
+            rocLadder(roc: tracker.rateOfClimb, fpmScale: 0.07)
+                .foregroundStyle(.white)
         }
         .accessibilityHidden(true)
     }
 
-    @ViewBuilder func ladder(degreeScale: Double) -> some View
+    @ViewBuilder func pitchLadder(degreeScale: Double) -> some View
     {
         ZStack(alignment: .center) {
             ForEach([10, 20, 30], id: \.self) { deg in
@@ -123,7 +121,21 @@ struct ArtificialHorizon: View {
             .offset(x: -heading.degrees * degreeScale)
             Image(systemName: "chevron.up")
         }
-        .foregroundStyle(.white)
+    }
+
+    @ViewBuilder func rocLadder(roc: Double, fpmScale: Double) -> some View
+    {
+        HStack(spacing: -4) {
+            Image(systemName: "chevron.right")
+                .offset(y: -roc * fpmScale)
+            ZStack(alignment: .trailing) {
+                ForEach(Array(stride(from: -2000, through: 2000, by: 500)), id: \.self) { fpm in
+                    Text((fpm / 100).description).font(.footnote)
+                        .offset(y: Double(-fpm) * fpmScale)
+                        .padding(.trailing, 2)
+                }
+            }
+        }
     }
 }
 

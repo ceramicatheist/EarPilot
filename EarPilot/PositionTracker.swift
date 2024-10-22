@@ -143,7 +143,7 @@ class PositionTracker: ObservableObject {
         }
         let metersPerMinute = metersPerSec * 60
         let fpm = Measurement(value: metersPerMinute, unit: UnitLength.meters).converted(to: UnitLength.feet).value
-        let beta = Double(0.5)
+        let beta = Double(0.1)
         rateOfClimb = (fpm * beta) + (rateOfClimb * (1 - beta))
     }
 
