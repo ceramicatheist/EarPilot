@@ -79,7 +79,8 @@ class PositionTracker: ObservableObject {
         manager.accelerometerUpdateInterval = 1 / 30
         manager.startAccelerometerUpdates(to: .main,
                                           withHandler: accelHandler)
-        altimeter.startRelativeAltitudeUpdates(to: .main, withHandler: altitudeHandler)
+        altimeter.startRelativeAltitudeUpdates(to: .main,
+                                               withHandler: altitudeHandler)
     }
 
     func motionHandler(_ motion: CMDeviceMotion?, _ err: Error?) {

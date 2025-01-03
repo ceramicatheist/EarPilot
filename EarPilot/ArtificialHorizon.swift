@@ -8,6 +8,9 @@
 import SwiftUI
 import Spatial
 
+let dfmt = FloatingPointFormatStyle<Double>()
+    .precision(.integerAndFractionLength(integer: 3, fraction: 0)).sign(strategy: .always())
+
 struct ArtificialHorizon: View {
 
     @ObservedObject private(set) var tracker: PositionTracker
@@ -15,9 +18,6 @@ struct ArtificialHorizon: View {
     init(tracker: PositionTracker) {
         self.tracker = tracker
     }
-
-    let dfmt = FloatingPointFormatStyle<Double>()
-        .precision(.integerAndFractionLength(integer: 3, fraction: 0))
 
     var body: some View {
         GeometryReader { g in
@@ -55,6 +55,15 @@ struct ArtificialHorizon: View {
         .overlay(alignment: .trailing) {
             rocLadder(roc: tracker.rateOfClimb, fpmScale: 0.07)
                 .foregroundStyle(.white)
+        }
+        .overlay(alignment: .bottom) {
+            HStack {
+//                Text("Z: \(tracker.zeroAttitude?.rpy ?? "?")")
+//                Spacer()
+                Text("P:\(tracker.pitch.degrees.formatted(dfmt)) R:\(tracker.roll.degrees.formatted(dfmt)) Y:\(tracker.yaw.degrees.formatted(dfmt))")
+            }
+            .foregroundStyle(.white)
+            .monospaced()
         }
         .accessibilityHidden(true)
     }
@@ -98,13 +107,13 @@ struct ArtificialHorizon: View {
                         case 0, 360:
                             Text("N").bold()
                                 .font(.caption)
-                        case 90:
+                        case 90, 450:
                             Text("E").bold()
                                 .font(.caption)
-                        case 180:
+                        case 180, -180:
                             Text("S").bold()
                                 .font(.caption)
-                        case 270:
+                        case 270, -90:
                             Text("W").bold()
                                 .font(.caption)
                         case _ where (deg + 360) % 10 != 0:
@@ -142,5 +151,13 @@ struct ArtificialHorizon: View {
 extension Angle2D {
     var angle: Angle {
         Angle(radians: self.radians)
+    }
+}
+
+extension Rotation3D {
+
+    var rpy: String {
+        let ea = self.eulerAngles(order: .zxy).angles * 57.29577951
+        return "x\(ea.x.formatted(dfmt)) y\(ea.y.formatted(dfmt)) z\(ea.z.formatted(dfmt))"
     }
 }
