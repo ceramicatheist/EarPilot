@@ -49,16 +49,20 @@ class PositionTracker: ObservableObject {
                 return
             }
 
-            let yawRelativeAttitude = attitude * zeroAttitude.inverse
-            let relativeYaw = yawRelativeAttitude.twistAngle(around: .z)
+            let relativeYaw = (attitude * zeroAttitude.inverse).twistAngle(around: .z)
 
-            let twistedZero = zeroAttitude.rotated(by: Rotation3D(angle: relativeYaw, axis: .z))
-            let relativeAttitude = attitude * twistedZero.inverse
+            let attitudeMinusYaw = attitude.rotated(by: Rotation3D(angle: -relativeYaw, axis: .z))
 
-            let absoluteYaw = attitude.twist(twistAxis: .z).rotated(by: Rotation3D(angle: -offAxisAngle, axis: .z))
-            roll = relativeAttitude.twistAngle(around: .y.rotated(by: absoluteYaw))
-            pitch = relativeAttitude.twistAngle(around: .x.rotated(by: absoluteYaw))
-            yaw = (.degrees(270) - absoluteYaw.twistAngle(around: .z)).normalized
+            let relativeAttitude = attitudeMinusYaw * zeroAttitude.inverse
+
+            let absoluteYaw = Rotation3D(angle: zeroAttitude.twistAngle(around: .z),
+                                         axis: .z)
+            let forward = RotationAxis3D.y.rotated(by: absoluteYaw)
+            let right = RotationAxis3D.x.rotated(by: absoluteYaw)
+
+            roll = relativeAttitude.twistAngle(around: forward)
+            pitch = relativeAttitude.twistAngle(around: right)
+            yaw = (.degrees(270) - relativeYaw).normalized
         }
     }
 
