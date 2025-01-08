@@ -56,15 +56,6 @@ struct ArtificialHorizon: View {
             rocLadder(roc: tracker.rateOfClimb, fpmScale: 0.07)
                 .foregroundStyle(.white)
         }
-        .overlay(alignment: .bottom) {
-            HStack {
-//                Text("Z: \(tracker.zeroAttitude?.rpy ?? "?")")
-//                Spacer()
-                Text("P:\(tracker.pitch.degrees.formatted(dfmt)) R:\(tracker.roll.degrees.formatted(dfmt)) Y:\(tracker.yaw.degrees.formatted(dfmt))")
-            }
-            .foregroundStyle(.white)
-            .monospaced()
-        }
         .accessibilityHidden(true)
     }
 
