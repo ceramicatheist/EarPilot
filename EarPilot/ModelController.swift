@@ -118,7 +118,7 @@ class ModelController: ObservableObject {
             compass = "error"
             angle = .zero
         }
-        talker.speak(compass, .degrees(-angle.degrees * 1.25 /* fudge the separation a bit wider */))
+        talker.speak(compass, .degrees(-angle.degrees * 1.25 /* fudge the separation a bit wider */), useOtherVoice: true)
     }
 }
 

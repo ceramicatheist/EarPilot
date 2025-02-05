@@ -67,12 +67,12 @@
 			isa = PBXGroup;
 			children = (
 				DA30C1FE2B83E79D00F61B31 /* Info.plist */,
-				DA2609472BD6D6A2002C2D1D /* TurnCoordinator.swift */,
 				DACB47012B5AE33500497C03 /* EarPilotApp.swift */,
 				DACB47112B5AE9D800497C03 /* FlightDisplay.swift */,
 				DAC124B72B794C0C00B582EA /* ModelController.swift */,
 				DACB470F2B5AE7BC00497C03 /* PositionTracker.swift */,
 				DACB47132B5C38BB00497C03 /* ArtificialHorizon.swift */,
+				DA2609472BD6D6A2002C2D1D /* TurnCoordinator.swift */,
 				DA15FDCE2B703EDD007F65D2 /* Talker.swift */,
 				DA30C1FC2B7A85F400F61B31 /* Spatial+extra.swift */,
 				DACB47052B5AE33600497C03 /* Assets.xcassets */,

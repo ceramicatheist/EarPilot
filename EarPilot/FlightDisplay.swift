@@ -54,8 +54,7 @@ struct FlightDisplay: View {
             LabeledContent {
                 let voiceBinding = Binding(get: {
                     model.talker.voice?.identifier ?? ""
-                },
-                                          set: { nv in
+                }, set: { nv in
                     model.talker.voice = model.talker.voices.first(where: { $0.identifier == nv })
                     dummy.toggle()
                 })
@@ -65,10 +64,28 @@ struct FlightDisplay: View {
                         let _ = dummy
                     }
                 } label: {
-                    Text("using voice: \(model.talker.voice?.name ?? "unspecified")")
+                    Text("using voice \(model.talker.voice?.name ?? "unspecified") for bank")
                 }
             } label: {
-                Text("Voice:")
+                Text("Bank Voice:")
+            }.pickerStyle(.menu)
+
+            LabeledContent {
+                let voiceBinding = Binding(get: {
+                    model.talker.otherVoice?.identifier ?? ""
+                }, set: { nv in
+                    model.talker.otherVoice = model.talker.voices.first(where: { $0.identifier == nv })
+                })
+                Picker(selection: voiceBinding) {
+                    ForEach(model.talker.voices) {
+                        Text("\($0.name)").tag($0.identifier)
+                        let _ = dummy
+                    }
+                } label: {
+                    Text("using voice \(model.talker.otherVoice?.name ?? "unspecified") for heading")
+                }
+            } label: {
+                Text("Heading Voice:")
             }.pickerStyle(.menu)
 
             LabeledContent {

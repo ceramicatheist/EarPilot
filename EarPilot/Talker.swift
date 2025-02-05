@@ -22,6 +22,7 @@ class Talker {
     }()
 
     @AppStorage("voice") var voiceIdentifier: String = ""
+    @AppStorage("otherVoice") var otherVoiceIdentifier: String = ""
 
     var voice: AVSpeechSynthesisVoice? {
         get {
@@ -31,6 +32,17 @@ class Talker {
         }
         set {
             voiceIdentifier = newValue?.identifier ?? ""
+        }
+    }
+
+    var otherVoice: AVSpeechSynthesisVoice? {
+        get {
+            voices.first { $0.identifier == self.otherVoiceIdentifier }
+            ?? voices.first { $0.identifier == AVSpeechSynthesisVoiceIdentifierAlex }
+            ?? voices.first
+        }
+        set {
+            otherVoiceIdentifier = newValue?.identifier ?? ""
         }
     }
 
@@ -92,10 +104,13 @@ class Talker {
     }
 
     /// angle is clockwise from 0 = straight ahead, just like flying
-    func speak(_ str: String, _ angle: Angle2D = .zero, pitchShift: Double = 0) {
+    func speak(_ str: String,
+               _ angle: Angle2D = .zero,
+               pitchShift: Double = 0,
+               useOtherVoice: Bool = false) {
         if !engine.isRunning { try! engine.start() }
         let utterance = AVSpeechUtterance(string: str + ".")
-        utterance.voice = voice
+        utterance.voice = useOtherVoice ? otherVoice : voice
         utterance.rate = 0.65
         utterance.pitchMultiplier = Float(1 + (pitchShift > 0 ? pitchShift * 2 : pitchShift))
 
