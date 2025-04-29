@@ -25,6 +25,7 @@
 		DA2609472BD6D6A2002C2D1D /* TurnCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnCoordinator.swift; sourceTree = "<group>"; };
 		DA30C1FC2B7A85F400F61B31 /* Spatial+extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Spatial+extra.swift"; sourceTree = "<group>"; };
 		DA30C1FE2B83E79D00F61B31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		DA8E2CA42DC1695B00718DEF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DAC124B52B7825C400B582EA /* gs_instruments.dls */ = {isa = PBXFileReference; lastKnownFileType = file; path = gs_instruments.dls; sourceTree = "<group>"; };
 		DAC124B72B794C0C00B582EA /* ModelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelController.swift; sourceTree = "<group>"; };
 		DACB46FE2B5AE33500497C03 /* EarPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EarPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +51,7 @@
 		DACB46F52B5AE33500497C03 = {
 			isa = PBXGroup;
 			children = (
+				DA8E2CA42DC1695B00718DEF /* README.md */,
 				DACB47002B5AE33500497C03 /* EarPilot */,
 				DACB46FF2B5AE33500497C03 /* Products */,
 			);
@@ -118,7 +120,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1520;
-				LastUpgradeCheck = 1520;
+				LastUpgradeCheck = 1630;
 				TargetAttributes = {
 					DACB46FD2B5AE33500497C03 = {
 						CreatedOnToolsVersion = 15.2;
@@ -210,6 +212,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 2Q5X3USQ5H;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -273,6 +276,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 2Q5X3USQ5H;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -302,7 +306,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EarPilot/Preview Content\"";
-				DEVELOPMENT_TEAM = 2Q5X3USQ5H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EarPilot/Info.plist;
@@ -338,7 +341,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EarPilot/Preview Content\"";
-				DEVELOPMENT_TEAM = 2Q5X3USQ5H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EarPilot/Info.plist;

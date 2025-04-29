@@ -12,5 +12,8 @@ playground.xcworkspace
 *.alias
 *.orig
 
+# keynote presentation
+*.key
+
 # auto generated versioning file
 BuildVersion.xcconfig
