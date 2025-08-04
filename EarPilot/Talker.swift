@@ -9,7 +9,7 @@ import AVFoundation
 import Spatial
 import SwiftUI
 
-class Talker {
+@MainActor @Observable class Talker {
 
     let synth = AVSpeechSynthesizer()
 
@@ -21,28 +21,34 @@ class Talker {
             .sorted { $1.quality.rawValue < $0.quality.rawValue }
     }()
 
-    @AppStorage("voice") var voiceIdentifier: String = ""
-    @AppStorage("otherVoice") var otherVoiceIdentifier: String = ""
+    @ObservationIgnored @AppStorage("voice") private var voiceIdentifier: String = ""
+    @ObservationIgnored @AppStorage("otherVoice") private var otherVoiceIdentifier: String = ""
 
     var voice: AVSpeechSynthesisVoice? {
         get {
-            voices.first { $0.identifier == self.voiceIdentifier }
+            _$observationRegistrar.access(self, keyPath: \.voice)
+            return voices.first { $0.identifier == self.voiceIdentifier }
             ?? voices.first { $0.identifier == AVSpeechSynthesisVoiceIdentifierAlex }
             ?? voices.first
         }
         set {
-            voiceIdentifier = newValue?.identifier ?? ""
+            _$observationRegistrar.withMutation(of: self, keyPath: \.voice) {
+                voiceIdentifier = newValue?.identifier ?? ""
+            }
         }
     }
 
     var otherVoice: AVSpeechSynthesisVoice? {
         get {
-            voices.first { $0.identifier == self.otherVoiceIdentifier }
+            _$observationRegistrar.access(self, keyPath: \.otherVoice)
+            return voices.first { $0.identifier == self.otherVoiceIdentifier }
             ?? voices.first { $0.identifier == AVSpeechSynthesisVoiceIdentifierAlex }
             ?? voices.first
         }
         set {
-            otherVoiceIdentifier = newValue?.identifier ?? ""
+            _$observationRegistrar.withMutation(of: self, keyPath: \.otherVoice) {
+                otherVoiceIdentifier = newValue?.identifier ?? ""
+            }
         }
     }
 

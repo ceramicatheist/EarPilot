@@ -10,31 +10,34 @@ import CoreMotion
 import SwiftUI
 import Spatial
 
-class PositionTracker: ObservableObject {
-    
-    @Published private(set) var pitch = Angle2D.zero
+@MainActor @Observable class PositionTracker {
 
-    @Published private(set) var roll = Angle2D.zero
+    private(set) var pitch = Angle2D.zero
 
-    @Published private(set) var yaw = Angle2D.zero // arbitrary zero
+    private(set) var roll = Angle2D.zero
 
-    @Published private(set) var heading = Angle2D.zero // positive, 0=north
+    private(set) var yaw = Angle2D.zero // arbitrary zero
 
-    @Published private(set) var coordination = Double(0)
+    private(set) var heading = Angle2D.zero // positive, 0=north
 
-    @Published private(set) var rateOfClimb = Double(0) // feet/min
+    private(set) var coordination = Double(0)
+
+    private(set) var rateOfClimb = Double(0) // feet/min
 
     var offAxisAngle: Angle2D {
         get {
-            .degrees(offAxisAngleDegrees)
+            _$observationRegistrar.access(self, keyPath: \.offAxisAngle)
+            return .degrees(offAxisAngleDegrees)
         }
         set {
-            offAxisAngleDegrees = newValue.degrees
-            (attitude, _) = (attitude, ())
+            _$observationRegistrar.withMutation(of: self, keyPath: \.offAxisAngle) {
+                offAxisAngleDegrees = newValue.degrees
+                (attitude, _) = (attitude, ())
+            }
         }
     }
 
-    @AppStorage("offAxisAngle") private var offAxisAngleDegrees: Double = 0
+    @ObservationIgnored @AppStorage("offAxisAngle") private var offAxisAngleDegrees: Double = 0
 
     private let manager = CMMotionManager()
     private let header = CMMotionManager()
@@ -156,5 +159,16 @@ class PositionTracker: ObservableObject {
         zeroAttitude = nil
         zeroAccel = nil
         coordination = 0
+    }
+}
+
+extension Angle2D {
+    var mutableDegrees: Double {
+        get {
+            self.degrees
+        }
+        set {
+            self = .degrees(newValue)
+        }
     }
 }

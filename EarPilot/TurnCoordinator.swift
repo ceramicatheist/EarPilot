@@ -44,7 +44,7 @@ struct TurnCoordinator: View {
                           startAngle: .zero,
                           endAngle: .radians(.pi * 2),
                           clockwise: true)
-            }.fill()
+            }.fill(.tint)
         }
         .frame(maxHeight: 64)
     }

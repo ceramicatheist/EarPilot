@@ -17,7 +17,8 @@
 		DACB47092B5AE33600497C03 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DACB47082B5AE33600497C03 /* Preview Assets.xcassets */; };
 		DACB47102B5AE7BC00497C03 /* PositionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB470F2B5AE7BC00497C03 /* PositionTracker.swift */; };
 		DACB47122B5AE9D800497C03 /* FlightDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB47112B5AE9D800497C03 /* FlightDisplay.swift */; };
-		DACB47142B5C38BB00497C03 /* ArtificialHorizon.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB47132B5C38BB00497C03 /* ArtificialHorizon.swift */; };
+		DACB47142B5C38BB00497C03 /* InstrumentationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACB47132B5C38BB00497C03 /* InstrumentationView.swift */; };
+		DAF948C72E4126CE00757DA2 /* ArtificialHorizon.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF948C62E4126C900757DA2 /* ArtificialHorizon.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,7 +35,8 @@
 		DACB47082B5AE33600497C03 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DACB470F2B5AE7BC00497C03 /* PositionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionTracker.swift; sourceTree = "<group>"; };
 		DACB47112B5AE9D800497C03 /* FlightDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlightDisplay.swift; sourceTree = "<group>"; };
-		DACB47132B5C38BB00497C03 /* ArtificialHorizon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtificialHorizon.swift; sourceTree = "<group>"; };
+		DACB47132B5C38BB00497C03 /* InstrumentationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentationView.swift; sourceTree = "<group>"; };
+		DAF948C62E4126C900757DA2 /* ArtificialHorizon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtificialHorizon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +75,8 @@
 				DACB47112B5AE9D800497C03 /* FlightDisplay.swift */,
 				DAC124B72B794C0C00B582EA /* ModelController.swift */,
 				DACB470F2B5AE7BC00497C03 /* PositionTracker.swift */,
-				DACB47132B5C38BB00497C03 /* ArtificialHorizon.swift */,
+				DACB47132B5C38BB00497C03 /* InstrumentationView.swift */,
+				DAF948C62E4126C900757DA2 /* ArtificialHorizon.swift */,
 				DA2609472BD6D6A2002C2D1D /* TurnCoordinator.swift */,
 				DA15FDCE2B703EDD007F65D2 /* Talker.swift */,
 				DA30C1FC2B7A85F400F61B31 /* Spatial+extra.swift */,
@@ -163,9 +166,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAF948C72E4126CE00757DA2 /* ArtificialHorizon.swift in Sources */,
 				DA30C1FD2B7A85F400F61B31 /* Spatial+extra.swift in Sources */,
 				DACB47102B5AE7BC00497C03 /* PositionTracker.swift in Sources */,
-				DACB47142B5C38BB00497C03 /* ArtificialHorizon.swift in Sources */,
+				DACB47142B5C38BB00497C03 /* InstrumentationView.swift in Sources */,
 				DA15FDCF2B703EDD007F65D2 /* Talker.swift in Sources */,
 				DACB47122B5AE9D800497C03 /* FlightDisplay.swift in Sources */,
 				DA2609482BD6D6A2002C2D1D /* TurnCoordinator.swift in Sources */,

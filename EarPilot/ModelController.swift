@@ -6,36 +6,35 @@
 //
 
 import Foundation
-import Combine
+import Observation
 import Spatial
 import SwiftUI
 
-class ModelController: ObservableObject {
+@MainActor @Observable class ModelController {
 
-    @AppStorage("bankEnabled") var shouldSpeakBank = true
-    @AppStorage("pitchEnabled") var shouldBeepPitch = true
-    @AppStorage("headingEnabled") var shouldSpeakCompass = true
+    @ObservationIgnored @AppStorage("bankEnabled") var shouldSpeakBank = true
+    @ObservationIgnored @AppStorage("pitchEnabled") var shouldBeepPitch = true
+    @ObservationIgnored @AppStorage("headingEnabled") var shouldSpeakCompass = true
     //@AppStorage("coordinationEnabled") var shouldSoundCoordination = true
     let shouldSoundCoordination = true
 
     let tracker = PositionTracker()
     let talker = Talker()
 
-    private var subscriptions = [AnyCancellable]()
-
     init() {
-        tracker.objectWillChange.sink { [weak self] in
-            self?.objectWillChange.send()
-        }.store(in: &subscriptions)
-        tracker.$roll.sink { [weak self] roll in
-            self?.updateRoll(roll, self?.tracker.coordination ?? 0)
-        }.store(in: &subscriptions)
-        tracker.$pitch.sink { [weak self] pitch in
-            self?.updatePitch(pitch)
-        }.store(in: &subscriptions)
-        tracker.$heading.sink { [weak self] heading in
-            self?.updateHeading(heading)
-        }.store(in: &subscriptions)
+        watchTracking()
+    }
+
+    func watchTracking() -> () {
+        withObservationTracking {
+            updateRoll(tracker.roll, tracker.coordination)
+            updatePitch(tracker.pitch)
+            updateHeading(tracker.heading)
+        } onChange: {
+            DispatchQueue.main.async { [weak self] in
+                self?.watchTracking()
+            }
+        }
     }
 
     private var lastRoll: (Int, Double, Date) = (0, 0, .distantPast)
