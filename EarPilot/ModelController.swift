@@ -19,10 +19,23 @@ import SwiftUI
     let shouldSoundCoordination = true
 
     let tracker = PositionTracker()
-    let talker = Talker()
+    var talker: Talker?
 
     init() {
         watchTracking()
+    }
+
+    var makeNoise: Bool {
+        get {
+            talker != nil
+        }
+        set {
+            if newValue, talker == nil {
+                talker = Talker()
+            } else {
+                talker = nil
+            }
+        }
     }
 
     func watchTracking() -> () {
@@ -58,13 +71,13 @@ import SwiftUI
         let adjust = shouldSoundCoordination ? coordination : 0
         switch number {
         case 0:
-            talker.speak("Level,", .zero)
+            talker?.speak("Level,", .zero)
 
         case ...0 :
-            talker.speak("\(abs(number))\(punc)", Angle2D(degrees: -90), pitchShift: adjust)
+            talker?.speak("\(abs(number))\(punc)", Angle2D(degrees: -90), pitchShift: adjust)
 
         default:
-            talker.speak("\(number)\(punc)", Angle2D(degrees: 90), pitchShift: -adjust)
+            talker?.speak("\(number)\(punc)", Angle2D(degrees: 90), pitchShift: -adjust)
         }
     }
 
@@ -79,7 +92,7 @@ import SwiftUI
 
         lastPitch = (number, now)
         guard shouldBeepPitch else {return}
-        talker.beep(number)
+        talker?.beep(number)
     }
 
     private var lastHeading: (Angle2D, Date) = (.zero, .distantPast)
@@ -117,7 +130,7 @@ import SwiftUI
             compass = "error"
             angle = .zero
         }
-        talker.speak(compass, .degrees(-angle.degrees * 1.25 /* fudge the separation a bit wider */), useOtherVoice: true)
+        talker?.speak(compass, .degrees(-angle.degrees * 1.25 /* fudge the separation a bit wider */), useOtherVoice: true)
     }
 }
 

@@ -43,7 +43,9 @@ struct ArtificialHorizon: View {
         .background {
             Color.cyan.brightness(-0.125).ignoresSafeArea()
         }
-        .clipShape(ToplessRectangle())
+        .mask {
+            Rectangle().ignoresSafeArea()
+        }
     }
 
     @ViewBuilder func pitchLadder(degreeScale: Double) -> some View
@@ -73,16 +75,6 @@ struct ArtificialHorizon: View {
             .font(.footnote)
         }
         .foregroundStyle(.white)
-    }
-}
-
-struct ToplessRectangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        let lots: CGFloat = 65536
-        var rect = rect
-        rect.size.height += lots
-        rect.origin.y -= lots
-        return Rectangle().path(in: rect)
     }
 }
 

@@ -16,6 +16,7 @@ struct FlightDisplay: View {
     @AppStorage("bankEnabled") var shouldSpeakBank = true
     @AppStorage("pitchEnabled") var shouldBeepPitch = true
     @AppStorage("headingEnabled") var shouldSpeakCompass = true
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         VStack(spacing: 0) {
@@ -43,32 +44,32 @@ struct FlightDisplay: View {
 
                 Spacer(minLength: -10)
 
-                LabeledContent {
-                    @Bindable var talker = model.talker
+                if let talker = model.talker {
+                    @Bindable var talker = talker
+                    LabeledContent {
 
-                    Picker(selection: $talker.voice) {
-                        ForEach(model.talker.voices) {
-                            Text("\($0.name)").tag($0)
+                        Picker(selection: $talker.voice) {
+                            ForEach(talker.voices) {
+                                Text("\($0.name)").tag($0)
+                            }
+                        } label: {
+                            Text("using voice \(talker.voice?.name ?? "unspecified") for bank")
                         }
                     } label: {
-                        Text("using voice \(model.talker.voice?.name ?? "unspecified") for bank")
+                        Text("Bank Voice:")
                     }
-                } label: {
-                    Text("Bank Voice:")
-                }
 
-                LabeledContent {
-                    @Bindable var talker = model.talker
-
-                    Picker(selection: $talker.otherVoice) {
-                        ForEach(model.talker.voices) {
-                            Text("\($0.name)").tag($0)
+                    LabeledContent {
+                        Picker(selection: $talker.otherVoice) {
+                            ForEach(talker.voices) {
+                                Text("\($0.name)").tag($0)
+                            }
+                        } label: {
+                            Text("using voice \(talker.otherVoice?.name ?? "unspecified") for heading")
                         }
                     } label: {
-                        Text("using voice \(model.talker.otherVoice?.name ?? "unspecified") for heading")
+                        Text("Heading Voice:")
                     }
-                } label: {
-                    Text("Heading Voice:")
                 }
 
                 LabeledContent {
@@ -88,6 +89,9 @@ struct FlightDisplay: View {
             }
             .padding([.top, .horizontal])
             .pickerStyle(.menu)
+        }
+        .onChange(of: scenePhase, initial: true) { _, newValue in
+            model.makeNoise = (newValue == .active)
         }
     }
 }
