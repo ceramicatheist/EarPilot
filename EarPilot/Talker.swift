@@ -117,7 +117,7 @@ import SwiftUI
         if !engine.isRunning { try! engine.start() }
         let utterance = AVSpeechUtterance(string: str + ".")
         utterance.voice = useOtherVoice ? otherVoice : voice
-        utterance.rate = 0.65
+        utterance.rate = 0.6
         utterance.pitchMultiplier = Float(1 + (pitchShift > 0 ? pitchShift * 2 : pitchShift))
 
         let voicePlayer = voicePlayers[currentPlayer]

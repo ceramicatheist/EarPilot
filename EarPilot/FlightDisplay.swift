@@ -21,7 +21,7 @@ struct FlightDisplay: View {
     var body: some View {
         VStack(spacing: 0) {
             InstrumentationView(tracker: model.tracker)
-                .containerRelativeFrame(.vertical, count: 2, spacing: 0)
+                .aspectRatio(1, contentMode: .fill)
             VStack {
                 Toggle(isOn: model.$shouldSpeakBank, label: {
                     Text("Speak Bank Angles")
@@ -37,8 +37,10 @@ struct FlightDisplay: View {
 
                 Spacer(minLength: -10)
 
-                Button("Zero pitch and roll") {
+                Button {
                     model.tracker.zero()
+                } label: {
+                    Text("Zero pitch and roll").padding()
                 }
                 .buttonStyle(.bordered)
 

@@ -18,7 +18,7 @@ To run a working copy, download from Apple TestFlight: https://testflight.apple.
 ### To use:
 
 - The pilot who will be flying by the audio cues should set up a suitable stereo headphone connection to the iPhone. AirPods worn underneath an aviation headset may work, as may pairing directly to a high-end headset with bluetooth and stereo.
-- Choose voices you like. They should be clear and high-quality. Downloading some "Enhanced" voices from Apple is highly recommended (see the system Settings.) Choosing distinct voices for bank and heading may be helpful.
+- Choose voices you like. They should be clear and high-quality. Downloading some "Enhanced" or "Premium" voices from Apple is **highly** recommended (see the system Settings > Accessibility > Spoken Content > Voices > English > Voice.) Choosing distinct voices for bank and heading may be helpful.
 - Secure the iPhone firmly in the airplane cockpit. Ram Mounts work well. Position it roughly vertically and as in line with the plane's axis as possible, i.e. in plane with the instrument panel. If it must be angled to the side a bit, adjust the "off-axis mount angle" setting to match.
 - Turn off all the audio feature switches.
 - Fly the plane straight and level. When stable in this attitude, tap the "zero pitch and roll" button. (Repeat this whenever necessary.)

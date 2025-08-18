@@ -21,8 +21,24 @@ import SwiftUI
     let tracker = PositionTracker()
     var talker: Talker?
 
+    private var phase: Int = 0
+    @ObservationIgnored
+    lazy private var idleTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
+        MainActor.assumeIsolated { [weak self] in
+            guard let self else {return}
+            switch phase {
+            case 0: updatePitch(tracker.pitch, idle: true)
+            case 1: updateRoll(tracker.roll, tracker.coordination, idle: true)
+            case 2: updateHeading(tracker.heading, idle: true)
+            default: ()
+            }
+            phase = (phase + 1) % 3
+        }
+    }
+
     init() {
         watchTracking()
+        defer { _ = idleTimer }
     }
 
     var makeNoise: Bool {
@@ -54,29 +70,28 @@ import SwiftUI
         var roundDegrees: Int
         var bucket: Double
         var degrees: Double
-        var when: Date
     }
     private var last: RollSample?
-    private let idleInterval = TimeInterval(3)
     let bucketSize = 5.0
 
-    private func updateRoll(_ roll: Angle2D, _ coordination: Double) {
+    private func updateRoll(_ roll: Angle2D, _ coordination: Double, idle: Bool = false) {
         let current = RollSample(
             roundDegrees: Int(roll.degrees.rounded(toMultipleOf: bucketSize)),
             bucket: (roll.degrees + bucketSize / 2).rounded(toMultipleOf: bucketSize),
             degrees: roll.degrees,
-            when: .now,
         )
         if last == nil { last = current }
 
-        if (current.bucket == last!.bucket || (current.roundDegrees == 0 && last!.roundDegrees == 0))
-            && current.when.timeIntervalSince(last!.when) < idleInterval
+        if !idle
+            && (current.bucket == last!.bucket || (current.roundDegrees == 0 && last!.roundDegrees == 0))
         {
             return
         }
+        idleTimer.fireDate = .now + idleTimer.timeInterval
         // rising or falling pitch depends on sign of roll velocity
         let leveling = abs(last!.bucket) > abs(current.bucket)
         self.last = current
+        
         guard shouldSpeakBank else {return}
 
         let punc = leveling ? "?" : "."
@@ -93,32 +108,24 @@ import SwiftUI
         }
     }
 
-    private var lastPitch: (Int, Date) = (0, .distantPast)
-
-    private func updatePitch(_ pitch: Angle2D) {
+    private var lastPitch = 0
+    private func updatePitch(_ pitch: Angle2D, idle: Bool = false) {
         let degrees = pitch.degrees / 3
         let number = Int(degrees.rounded())
-        if number == 0 && lastPitch.0 == 0 {return}
-        let now = Date()
-        if number == lastPitch.0 && now.timeIntervalSince(lastPitch.1) < idleInterval {return}
-
-        lastPitch = (number, now)
+        if number == lastPitch && !idle {return}
+        idleTimer.fireDate = .now + idleTimer.timeInterval
+        lastPitch = number
         guard shouldBeepPitch else {return}
         talker?.beep(number)
     }
 
-    private var lastHeading: (Angle2D, Date) = (.zero, .distantPast)
-    private func updateHeading(_ heading: Angle2D) {
-        let now = Date()
-        let delta = abs(lastHeading.0.circularDifference(from: heading).degrees)
-
-        if delta < 2
-            || (delta < 5 && now.timeIntervalSince(lastHeading.1) < idleInterval)
-            || (delta < 10 && now.timeIntervalSince(lastHeading.1) < 1)
-        { return }
-
-        lastHeading = (heading, now)
-
+    private var lastHeading: Angle2D?
+    private func updateHeading(_ heading: Angle2D, idle: Bool = false) {
+        guard let lastHeading else { lastHeading = heading ; return }
+        let delta = abs(lastHeading.circularDifference(from: heading).degrees)
+        if delta < 10 && !idle { return }
+        idleTimer.fireDate = .now + idleTimer.timeInterval
+        self.lastHeading = heading
         guard shouldSpeakCompass else {return}
         let compass: String
         let angle: Angle2D
