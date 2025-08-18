@@ -52,19 +52,19 @@ import SwiftUI
         }
     }
 
-    let engine = AVAudioEngine()
-    let voicePlayers: [AVAudioPlayerNode] = [
+    private let engine = AVAudioEngine()
+    private let voicePlayers: [AVAudioPlayerNode] = [
         AVAudioPlayerNode(),
         AVAudioPlayerNode(),
         AVAudioPlayerNode(),
         AVAudioPlayerNode(),
         AVAudioPlayerNode(),
     ]
-    var currentPlayer: Int = 0
-    let mixer = AVAudioEnvironmentNode()
-    let upBeeper = AVAudioUnitSampler()
-    let levelBeeper = AVAudioUnitSampler()
-    let downBeeper = AVAudioUnitSampler()
+    private var currentPlayer: Int = 0
+    private let mixer = AVAudioEnvironmentNode()
+    private let upBeeper = AVAudioUnitSampler()
+    private let levelBeeper = AVAudioUnitSampler()
+    private let downBeeper = AVAudioUnitSampler()
 
     init() {
         let sess = AVAudioSession.sharedInstance()

@@ -50,34 +50,46 @@ import SwiftUI
         }
     }
 
-    private var lastRoll: (Int, Double, Date) = (0, 0, .distantPast)
-    private var lastLeveling = true // true when rolling toward level
-    let idleInterval = TimeInterval(2)
+    private struct RollSample: Hashable {
+        var roundDegrees: Int
+        var bucket: Double
+        var degrees: Double
+        var when: Date
+    }
+    private var last: RollSample?
+    private let idleInterval = TimeInterval(3)
+    let bucketSize = 5.0
 
     private func updateRoll(_ roll: Angle2D, _ coordination: Double) {
-        let degrees = roll.degrees
-        let number = Int(degrees.rounded(toMultipleOf: 5))
-        if number == 0 && lastRoll.0 == 0 {return}
-        let now = Date()
-        let leveling = abs(degrees) < abs(lastRoll.1)
-        if number == lastRoll.0 && leveling == lastLeveling && now.timeIntervalSince(lastRoll.2) < idleInterval {return}
+        let current = RollSample(
+            roundDegrees: Int(roll.degrees.rounded(toMultipleOf: bucketSize)),
+            bucket: (roll.degrees + bucketSize / 2).rounded(toMultipleOf: bucketSize),
+            degrees: roll.degrees,
+            when: .now,
+        )
+        if last == nil { last = current }
 
+        if (current.bucket == last!.bucket || (current.roundDegrees == 0 && last!.roundDegrees == 0))
+            && current.when.timeIntervalSince(last!.when) < idleInterval
+        {
+            return
+        }
         // rising or falling pitch depends on sign of roll velocity
-        let punc = leveling ? "?" : "."
-
-        lastRoll = (number, degrees, now)
-        lastLeveling = leveling
+        let leveling = abs(last!.bucket) > abs(current.bucket)
+        self.last = current
         guard shouldSpeakBank else {return}
-        let adjust = shouldSoundCoordination ? coordination : 0
-        switch number {
+
+        let punc = leveling ? "?" : "."
+        let adjust = shouldSoundCoordination ? coordination * 4 : 0
+        switch current.roundDegrees {
         case 0:
-            talker?.speak("Level,", .zero)
+            talker?.speak("Level.", .zero)
 
         case ...0 :
-            talker?.speak("\(abs(number))\(punc)", Angle2D(degrees: -90), pitchShift: adjust)
+            talker?.speak("\(abs(current.roundDegrees))\(punc)", Angle2D(degrees: -90), pitchShift: adjust)
 
         default:
-            talker?.speak("\(number)\(punc)", Angle2D(degrees: 90), pitchShift: -adjust)
+            talker?.speak("\(current.roundDegrees)\(punc)", Angle2D(degrees: 90), pitchShift: -adjust)
         }
     }
 
