@@ -16,6 +16,7 @@ struct FlightDisplay: View {
     @AppStorage("bankEnabled") var shouldSpeakBank = true
     @AppStorage("pitchEnabled") var shouldBeepPitch = true
     @AppStorage("headingEnabled") var shouldSpeakCompass = true
+    @AppStorage("bankStep") private var bankStep: Int = 5
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -23,15 +24,25 @@ struct FlightDisplay: View {
             InstrumentationView(tracker: model.tracker)
                 .aspectRatio(1, contentMode: .fill)
             VStack {
-                Toggle(isOn: model.$shouldSpeakBank, label: {
-                    Text("Speak Bank Angles")
+                Toggle(isOn: $shouldSpeakBank, label: {
+                    HStack {
+                        Text("Speak Bank Angles")
+                        Spacer()
+                        Picker(selection: $bankStep) {
+                            ForEach(2...8, id: \.self) { deg in
+                                Text("every \(deg)º").tag(deg)
+                            }
+                        } label: {
+                            Text("Speak Bank Angles")
+                        }
+                    }
                 })
 
-                Toggle(isOn: model.$shouldBeepPitch, label: {
+                Toggle(isOn: $shouldBeepPitch, label: {
                     Text("Beep Pitch Angle")
                 })
 
-                Toggle(isOn: model.$shouldSpeakCompass, label: {
+                Toggle(isOn: $shouldSpeakCompass, label: {
                     Text("Speak Compass Points")
                 })
 
@@ -84,7 +95,6 @@ struct FlightDisplay: View {
                     } label: {
                         Text("Off-Axis Mount Angle:")
                     }
-
                 } label: {
                     Text("Off-Axis Mount Angle:")
                 }

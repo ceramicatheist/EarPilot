@@ -12,10 +12,11 @@ import SwiftUI
 
 @MainActor @Observable class ModelController {
 
-    @ObservationIgnored @AppStorage("bankEnabled") var shouldSpeakBank = true
-    @ObservationIgnored @AppStorage("pitchEnabled") var shouldBeepPitch = true
-    @ObservationIgnored @AppStorage("headingEnabled") var shouldSpeakCompass = true
+    @ObservationIgnored @AppStorage("bankEnabled") private var shouldSpeakBank = true
+    @ObservationIgnored @AppStorage("pitchEnabled") private var shouldBeepPitch = true
+    @ObservationIgnored @AppStorage("headingEnabled") private var shouldSpeakCompass = true
     //@AppStorage("coordinationEnabled") var shouldSoundCoordination = true
+    @ObservationIgnored @AppStorage("bankStep") private var bankStep: Int = 5
     let shouldSoundCoordination = true
 
     let tracker = PositionTracker()
@@ -72,9 +73,9 @@ import SwiftUI
         var degrees: Double
     }
     private var last: RollSample?
-    let bucketSize = 5.0
 
     private func updateRoll(_ roll: Angle2D, _ coordination: Double, idle: Bool = false) {
+        let bucketSize = Double(bankStep)
         let current = RollSample(
             roundDegrees: Int(roll.degrees.rounded(toMultipleOf: bucketSize)),
             bucket: (roll.degrees + bucketSize / 2).rounded(toMultipleOf: bucketSize),
