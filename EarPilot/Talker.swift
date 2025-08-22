@@ -15,7 +15,7 @@ import SwiftUI
 
     let voices: [AVSpeechSynthesisVoice] = {
         AVSpeechSynthesisVoice.speechVoices()
-            .filter { $0.language.starts(with: "en-US") }
+            .filter { $0.language.starts(with: "en") }
             .filter { !$0.voiceTraits.contains(.isNoveltyVoice) }
             .sorted { $0.name < $1.name }
             .sorted { $1.quality.rawValue < $0.quality.rawValue }
@@ -115,7 +115,7 @@ import SwiftUI
                pitchShift: Double = 0,
                useOtherVoice: Bool = false) {
         if !engine.isRunning { try! engine.start() }
-        let utterance = AVSpeechUtterance(string: str + ".")
+        let utterance = AVSpeechUtterance(string: str)
         utterance.voice = useOtherVoice ? otherVoice : voice
         utterance.rate = 0.6
         utterance.pitchMultiplier = Float(1 + (pitchShift > 0 ? pitchShift * 2 : pitchShift))
