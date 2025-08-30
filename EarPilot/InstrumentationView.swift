@@ -36,6 +36,7 @@ struct InstrumentationView: View {
                 .padding(.horizontal)
         }
         .accessibilityHidden(true)
+        .dynamicTypeSize(.xxxLarge)
     }
 
     @ViewBuilder func compass(heading: Angle2D, degreeScale: Double) -> some View
@@ -63,7 +64,7 @@ struct InstrumentationView: View {
                             Text(((deg + 360) % 360).description)
                                 .font(.caption2)
                         }
-                        Rectangle().frame(width: 1, height: 5)
+                        Rectangle().frame(width: 2, height: 5)
                     }
                     .offset(x: Double(deg) * degreeScale)
                 }

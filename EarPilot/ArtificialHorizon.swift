@@ -29,13 +29,13 @@ struct ArtificialHorizon: View {
 
                 Path {
                     $0.move(to: CGPoint(x: -box.width/4, y: 0))
-                    $0.addArc(center: .zero, radius: 15, startAngle: .radians(.pi), endAngle: .radians(3 * .pi / 4), clockwise: true)
+                    $0.addArc(center: .zero, radius: 20, startAngle: .radians(.pi), endAngle: .radians(3 * .pi / 4), clockwise: true)
                     $0.move(to: CGPoint(x: box.width/4, y: 0))
-                    $0.addArc(center: .zero, radius: 15, startAngle: .zero, endAngle: .radians(.pi / 4), clockwise: false)
+                    $0.addArc(center: .zero, radius: 20, startAngle: .zero, endAngle: .radians(.pi / 4), clockwise: false)
                     $0.move(to: .zero)
-                    $0.addEllipse(in: CGRect(x: -3, y: -3, width: 6, height: 6))
+                    $0.addEllipse(in: CGRect(x: -3, y: -3, width: 8, height: 8))
                 }
-                .strokedPath(.init(lineWidth: 2))
+                .strokedPath(.init(lineWidth: 4))
                 .frame(width: 1, height: 1, alignment: .center)
                 .foregroundStyle(.tint)
             }
@@ -54,22 +54,22 @@ struct ArtificialHorizon: View {
             ForEach([10, 20, 30], id: \.self) { deg in
                 HStack {
                     Text(deg.description).hidden()
-                    Rectangle().frame(width: Double(deg * 2), height: 1)
+                    Rectangle().frame(width: Double(deg * 2), height: 2)
                     Text(deg.description)
                 }
                 .offset(y: -Double(deg) * degreeScale)
 
-                Rectangle().frame(width: Double(deg / 2), height: 1)
+                Rectangle().frame(width: Double(deg / 2), height: 2)
                     .offset(y: -Double(deg - 5) * degreeScale)
 
                 HStack {
                     Text(deg.description).hidden()
-                    Rectangle().frame(width: Double(deg * 2), height: 1)
+                    Rectangle().frame(width: Double(deg * 2), height: 2)
                     Text(deg.description)
                 }
                 .offset(y: Double(deg) * degreeScale)
 
-                Rectangle().frame(width: Double(deg / 2), height: 1)
+                Rectangle().frame(width: Double(deg / 2), height: 2)
                     .offset(y: Double(deg - 5) * degreeScale)
             }
             .font(.footnote)

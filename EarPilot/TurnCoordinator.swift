@@ -25,14 +25,14 @@ struct TurnCoordinator: View {
                                 control: CGPoint(x: (box.midX + box.maxX) / 2.0, y: box.maxY - radius))
             }
 
-            arc.strokedPath(.init(lineWidth: radius * 2, lineCap: .round)).strokedPath(.init(lineWidth: 1))
+            arc.strokedPath(.init(lineWidth: radius * 2, lineCap: .round)).strokedPath(.init(lineWidth: 2))
 
             Path {
                 $0.move(to: CGPoint(x: box.midX - radius, y: box.maxY))
                 $0.addLine(to: CGPoint(x: box.midX - radius, y: box.maxY - radius * 2))
                 $0.move(to: CGPoint(x: box.midX + radius, y: box.maxY))
                 $0.addLine(to: CGPoint(x: box.midX + radius, y: box.maxY - radius * 2))
-            }.strokedPath(.init(lineWidth: 1))
+            }.strokedPath(.init(lineWidth: 2))
 
             let t = coordination.clamped(to: -0.5...0.5) + 0.5
             let trim = arc.trimmedPath(from: (t - 0.01).clamped(to: 0...1),

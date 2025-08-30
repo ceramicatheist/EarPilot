@@ -46,16 +46,25 @@ struct FlightDisplay: View {
                     Text("Speak Compass Points")
                 })
 
-                Spacer(minLength: -10)
+                Spacer(minLength: 0)
 
-                Button {
-                    model.tracker.zero()
-                } label: {
-                    Text("Zero pitch and roll").padding()
+                ViewThatFits {
+                    Button {
+                        model.tracker.zero()
+                    } label: {
+                        Text("Zero pitch and roll").padding()
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button {
+                        model.tracker.zero()
+                    } label: {
+                        Text("Zero pitch and roll")
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
 
-                Spacer(minLength: -10)
+                Spacer(minLength: 0)
 
                 if let talker = model.talker {
                     @Bindable var talker = talker
