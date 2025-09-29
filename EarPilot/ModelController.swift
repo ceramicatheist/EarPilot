@@ -128,29 +128,19 @@ import SwiftUI
         idleTimer.fireDate = .now + idleTimer.timeInterval
         self.lastHeading = heading
         guard shouldSpeakCompass else {return}
-        let compass: String
-        let angle: Angle2D
-        switch heading.degrees {
-        case 0..<45:
-            compass = "north"
-            angle = heading
-        case 45..<135:
-            compass = "east"
-            angle = heading - .degrees(90)
-        case 135..<225:
-            compass = "south"
-            angle = heading - .degrees(180)
-        case 225..<315:
-            compass = "west"
-            angle = heading - .degrees(270)
-        case 315...360:
-            compass = "north"
-            angle = heading - .degrees(360)
-        default:
-            compass = "error"
-            angle = .zero
-        }
-        talker?.speak(compass, .degrees(-angle.degrees * 1.25 /* fudge the separation a bit wider */), useOtherVoice: true)
+        let octant = Int(heading.degrees.rounded(toMultipleOf: 45) / 45) % 8
+        let compass = [
+            "north",
+            "northeast",
+            "east",
+            "southeast",
+            "south",
+            "southwest",
+            "west",
+            "northwest"
+        ][octant]
+        let offDegrees = (heading.degrees.rounded(toMultipleOf: 45) - heading.degrees) * 2.5
+        talker?.speak(compass, .degrees(offDegrees), useOtherVoice: true)
     }
 }
 
