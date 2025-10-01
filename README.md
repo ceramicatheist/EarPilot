@@ -13,7 +13,7 @@ To run a working copy, download from Apple TestFlight: https://testflight.apple.
 - Top edge: compass
 - Right edge: rate of climb
 - Center: artifical horizon (attitude indicator)
-- Bottom: turn coordinator 
+- Bottom: turn coordinator
 
 ### To use:
 
@@ -28,9 +28,9 @@ To run a working copy, download from Apple TestFlight: https://testflight.apple.
 
 #### Speak Bank Angles
 
-The plane's bank in degrees will be spoken, in five-degree increments, in the ear to the side the plane is banking toward. When level, "level" is spoken in the center.
+The plane's bank in degrees will be spoken in the ear to the side the plane is banking toward. When level, "level" is spoken in the center.
 
-If the plane is rolling *into* the bank (away from level), the speech will be in a **normal** tone. If the plane is rolling *out* of bank (toward level), the speech will have a **rising** tone, as if interrogative.
+If the plane is rolling *into* the bank (away from level), the speech will be in a **normal** tone. If the plane is rolling *out* of bank (toward level), the speech may have a **rising** tone, as if interrogative. (This depends on the chosen voice - some support it, some don't.)
 
 If the plane is *slipping* (turn coordinator ball to the *inside* of the turn), the voice will be pitched **deeper**. If the plane is *skidding* (turn coordinator ball to the *outside* of the turn), the voice will be pitched **higher**.
 
@@ -40,7 +40,7 @@ Plays MIDI musical notes proportional to the pitch of the plane.
 
 When level, plays concert A, using a bell sound.
 
-When pitched down, plays lower notes, one semitone per three degrees, using a synthetic string instrument.
+When pitched down, plays lower notes, one semitone per three degrees, using a string instrument.
 
 When pitched up, plays higher notes, one semitone per three degrees, using a wind instrument.
 
@@ -48,13 +48,12 @@ When pitched up, plays higher notes, one semitone per three degrees, using a win
 
 #### Speak Compass Points
 
-In turns, the nearest cardinal compass direction will be periodically spoken, coming from that direction using spatial audio.
-
-E.g.: when turning to northeast by north, "NORTH" will be spoken, apparently from the front-left. Turning slightly eastward to northeast by east, and "EAST" will be spoken from the right. Continuing the turn to due east will cause "EAST" to sound directly from the front/center.
-
-When holding a constant heading, heading will not be spoken.
+In turns, the nearest cardinal and semi-cardinal compass direction will be periodically spoken, coming from that direction using spatial audio.
+E.g., when on a northeast by north heading, "Northeast" will be spoken slightly from the right. As you turn left and pass NNE toward north by east, "North" will be spoken from the left. Continuing the turn to due north will cause "North" to sound directly from the front/center.
 
 While turning, heading will be spoken more frequently as the rate of turn increases.
+
+While holding a constant attitude and heading, the chosen cues will sound in a slow cycle, one every three seconds or so. While maneuvering, the changing parameters will sound more rapidly. 
 
 ## License
 
