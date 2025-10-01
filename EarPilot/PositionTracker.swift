@@ -7,10 +7,11 @@
 
 import Foundation
 import CoreMotion
+import CoreLocation
 import SwiftUI
 import Spatial
 
-@MainActor @Observable class PositionTracker {
+@MainActor @Observable class PositionTracker: NSObject {
 
     private(set) var pitch = Angle2D.zero
 
@@ -18,7 +19,11 @@ import Spatial
 
     private(set) var yaw = Angle2D.zero // arbitrary zero
 
-    private(set) var heading = Angle2D.zero // positive, 0=north
+    private(set) var magHeading = Angle2D.zero // positive, 0=north
+
+    private(set) var gpsHeading = Angle2D.zero
+
+    var heading: Angle2D { useGpsHeading ? gpsHeading : magHeading }
 
     private(set) var coordination = Double(0)
 
@@ -37,9 +42,12 @@ import Spatial
         }
     }
 
+    var useGpsHeading = false
+
     @ObservationIgnored @AppStorage("offAxisAngle") private var offAxisAngleDegrees: Double = 0
 
     private let manager = CMMotionManager()
+    private let gps = CLLocationManager()
     private let header = CMMotionManager()
     private let altimeter = CMAltimeter()
 
@@ -74,7 +82,14 @@ import Spatial
 
     private var alts: [CMAltitudeData] = []
 
-    init() {
+    override init() {
+        super.init()
+        gps.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        gps.requestAlwaysAuthorization()
+        gps.delegate = self
+        gps.startUpdatingLocation()
+        gps.startUpdatingHeading()
+
         manager.deviceMotionUpdateInterval = 1 / 30
         manager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,
                                          to: .main,
@@ -103,13 +118,13 @@ import Spatial
 
     func headingHandler(_ motion: CMDeviceMotion?, _ err: Error?) {
         guard let motion else {
-            heading = .zero
+            magHeading = .zero
             return
         }
         var deg = motion.heading - offAxisAngleDegrees
         if deg < 0 { deg += 360 }
         if deg > 360 { deg -= 360 }
-        heading = .init(degrees: deg)
+        magHeading = .init(degrees: deg)
     }
 
     func accelHandler(_ accel: CMAccelerometerData?, _ err: Error?) {
@@ -123,7 +138,7 @@ import Spatial
 
         let x = accel.acceleration.x - zeroAccel.acceleration.x
 
-        let beta = Double(0.1)
+        let beta = Double(0.05)
         coordination = (x * beta) + (coordination * (1 - beta))
     }
 
@@ -169,6 +184,19 @@ extension Angle2D {
         }
         set {
             self = .degrees(newValue)
+        }
+    }
+}
+
+extension PositionTracker: @MainActor CLLocationManagerDelegate {
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        print("loc \(locations.last, default: "?")")
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        if newHeading.magneticHeading >= 0 {
+            gpsHeading = Angle2D(degrees: newHeading.magneticHeading)
         }
     }
 }

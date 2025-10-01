@@ -23,13 +23,13 @@ struct FlightDisplay: View {
         VStack(spacing: 0) {
             InstrumentationView(tracker: model.tracker)
                 .aspectRatio(1, contentMode: .fill)
-            VStack {
+            VStack(spacing: 2) {
                 Toggle(isOn: $shouldSpeakBank, label: {
                     HStack {
                         Text("Speak Bank Angles")
                         Spacer()
                         Picker(selection: $bankStep) {
-                            ForEach(2...8, id: \.self) { deg in
+                            ForEach(1...5, id: \.self) { deg in
                                 Text("every \(deg)º").tag(deg)
                             }
                         } label: {
@@ -54,15 +54,14 @@ struct FlightDisplay: View {
                     } label: {
                         Text("Zero pitch and roll").padding()
                     }
-                    .buttonStyle(.bordered)
 
                     Button {
                         model.tracker.zero()
                     } label: {
                         Text("Zero pitch and roll")
                     }
-                    .buttonStyle(.bordered)
                 }
+                .buttonStyle(.bordered)
 
                 Spacer(minLength: 0)
 
@@ -98,7 +97,7 @@ struct FlightDisplay: View {
                     @Bindable var tracker = model.tracker
 
                     Picker(selection: $tracker.offAxisAngle.mutableDegrees) {
-                        ForEach(Array(stride(from: -30.0, to: 30.0, by: 5.0)), id: \.self) {
+                        ForEach(Array(stride(from: -20.0, to: 20.0, by: 2.0)), id: \.self) {
                             Text("\(abs($0).formatted(.number.rounded()))º \($0 < 0 ? "left" : $0 > 0 ? "right" : "")").tag($0)
                         }
                     } label: {
@@ -106,6 +105,21 @@ struct FlightDisplay: View {
                     }
                 } label: {
                     Text("Off-Axis Mount Angle:")
+                }
+
+                LabeledContent {
+                    @Bindable var tracker = model.tracker
+
+                    Picker(selection: $tracker.useGpsHeading) {
+                        Text("GPS").tag(true)
+                        Text("Compass").tag(false)
+                    } label: {
+                        Text("Heading Source:")
+                    }
+                    .pickerStyle(.segmented)
+                    .fixedSize()
+                } label: {
+                    Text("Heading Source:")
                 }
             }
             .padding([.top, .horizontal])
