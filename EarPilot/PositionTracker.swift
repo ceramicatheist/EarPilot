@@ -29,6 +29,8 @@ import Spatial
 
     private(set) var rateOfClimb = Double(0) // feet/min
 
+    var altitude = Double(0) // feet
+
     var offAxisAngle: Angle2D {
         get {
             _$observationRegistrar.access(self, keyPath: \.offAxisAngle)
@@ -80,7 +82,7 @@ import Spatial
     private var zeroAttitude: Rotation3D?
     private var zeroAccel: CMAccelerometerData?
 
-    private var alts: [CMAltitudeData] = []
+    private var alts: [CMAbsoluteAltitudeData] = []
 
     override init() {
         super.init()
@@ -101,8 +103,7 @@ import Spatial
         manager.accelerometerUpdateInterval = 1 / 30
         manager.startAccelerometerUpdates(to: .main,
                                           withHandler: accelHandler)
-        altimeter.startRelativeAltitudeUpdates(to: .main,
-                                               withHandler: altitudeHandler)
+        altimeter.startAbsoluteAltitudeUpdates(to: .main, withHandler: altitudeHandler)
     }
 
     func motionHandler(_ motion: CMDeviceMotion?, _ err: Error?) {
@@ -142,7 +143,7 @@ import Spatial
         coordination = (x * beta) + (coordination * (1 - beta))
     }
 
-    func altitudeHandler(_ alt: CMAltitudeData?, _ err: Error?) {
+    func altitudeHandler(_ alt: CMAbsoluteAltitudeData?, _ err: Error?) {
         guard let alt else {
             rateOfClimb = 0
             return
@@ -152,13 +153,13 @@ import Spatial
         let metersPerSec: Double
         switch alts.count {
         case 3:
-            let c1 = alts[0].relativeAltitude.doubleValue
-            let c2 = alts[1].relativeAltitude.doubleValue * -4
-            let c3 = alts[2].relativeAltitude.doubleValue * 3
+            let c1 = alts[0].altitude
+            let c2 = alts[1].altitude * -4
+            let c3 = alts[2].altitude * 3
             let deltaT = alts[2].timestamp - alts[0].timestamp // assume alts[1] is about in the middle
             metersPerSec = deltaT > 0 ? (c1 + c2 + c3) / deltaT : 0
         case 2:
-            let deltaY = alts[1].relativeAltitude.doubleValue - alts[0].relativeAltitude.doubleValue
+            let deltaY = alts[1].altitude - alts[0].altitude
             let deltaT = alts[1].timestamp - alts[0].timestamp
             metersPerSec = deltaT > 0 ? deltaY / deltaT : 0
         default:
@@ -168,6 +169,9 @@ import Spatial
         let fpm = Measurement(value: metersPerMinute, unit: UnitLength.meters).converted(to: UnitLength.feet).value
         let beta = Double(0.1)
         rateOfClimb = (fpm * beta) + (rateOfClimb * (1 - beta))
+
+        let meters = alts.map(\.altitude).reduce(0.0, +) / Double(alts.count)
+        self.altitude = Measurement(value: meters, unit: UnitLength.meters).converted(to: .feet).value
     }
 
     func zero() {

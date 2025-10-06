@@ -21,19 +21,21 @@ struct InstrumentationView: View {
 
     var body: some View {
         ArtificialHorizon(pitch: tracker.pitch, roll: tracker.roll)
-        .overlay(alignment: .top) {
-            compass(heading: tracker.heading, degreeScale: 2)
-                .foregroundStyle(.white)
-        }
-        .overlay(alignment: .trailing) {
-            rocLadder(roc: tracker.rateOfClimb, fpmScale: 0.07)
-                .foregroundStyle(.white)
-        }
-        .overlay(alignment: .bottom) {
-            TurnCoordinator(coordination: tracker.coordination)
-                .foregroundStyle(.white)
-                .padding()
-                .padding(.horizontal)
+        .overlay {
+            VStack(spacing: 0) {
+                compass(heading: tracker.heading, degreeScale: 2)
+                    .foregroundStyle(.white)
+                HStack(spacing: 0) {
+                    speedTape(knots: 0, scale: 0)
+                    Spacer()
+                    altimeter(feet: tracker.altitude,
+                              fpm: tracker.rateOfClimb, scale: 0.4)
+                }
+                TurnCoordinator(coordination: tracker.coordination)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 2)
+                    .padding(.horizontal)
+            }
         }
         .accessibilityHidden(true)
         .dynamicTypeSize(.xxxLarge)
@@ -43,6 +45,7 @@ struct InstrumentationView: View {
     {
         VStack {
             ZStack(alignment: .center) {
+                Color.clear.frame(maxHeight: 1)
                 ForEach(Array(stride(from: -180, through: 540, by: 15)), id:\.self) { deg in
                     VStack(spacing: 0) {
                         switch deg {
@@ -72,20 +75,42 @@ struct InstrumentationView: View {
             .offset(x: -heading.degrees * degreeScale)
             Image(systemName: "chevron.up")
         }
+        .clipped()
     }
 
-    @ViewBuilder func rocLadder(roc: Double, fpmScale: Double) -> some View
+    @ViewBuilder func speedTape(knots: Double, scale: Double) -> some View {
+
+    }
+
+    @ViewBuilder func altimeter(feet: Double, fpm: Double, scale: Double) -> some View
     {
-        HStack(spacing: -4) {
-            Image(systemName: "chevron.right")
-                .offset(y: -roc * fpmScale)
-            ZStack(alignment: .trailing) {
-                ForEach(Array(stride(from: -2000, through: 2000, by: 500)), id: \.self) { fpm in
-                    Text((fpm / 100).description).font(.footnote)
-                        .offset(y: Double(-fpm) * fpmScale)
-                        .padding(.trailing, 2)
+        HStack(spacing: 0) {
+            Image(systemName: "chevron.right").overlay(alignment: .top) {
+                if fpm > 10 {
+                    Image(systemName: "chevron.compact.up")
+                        .offset(y: -fpm * scale)
                 }
             }
+            .overlay(alignment: .bottom) {
+                if fpm < -10 {
+                    Image(systemName: "chevron.compact.down")
+                        .offset(y: -fpm * scale)
+                }
+            }
+            ZStack(alignment: .leading) {
+                ForEach(Array(stride(from: 0, through: 10000, by: 100)), id: \.self) { ft in
+                    let thousands = (ft / 1000).formatted()
+                    let hundreds = (ft % 1000).formatted(.number.precision(.integerLength(3)))
+
+                    (Text(thousands).font(.footnote.bold()) + Text(hundreds).font(.caption2))
+                        .monospacedDigit()
+                        .offset(y: (Double(-ft) + feet) * scale)
+                        .padding(.trailing, 2)
+                        .dynamicTypeSize(.xLarge)
+                }
+            }
+            Color.clear.frame(maxWidth: 1)
         }
+        .clipped()
     }
 }

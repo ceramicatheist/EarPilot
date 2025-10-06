@@ -11,7 +11,7 @@ import SwiftUI
 struct TurnCoordinator: View {
     var coordination: Double // negative is left
 
-    let radius = 16.0
+    let radius = 12.0
 
     var body: some View {
 
@@ -46,7 +46,7 @@ struct TurnCoordinator: View {
                           clockwise: true)
             }.fill(.tint)
         }
-        .frame(maxHeight: 64)
+        .frame(maxHeight: 48)
     }
 }
 
