@@ -25,7 +25,7 @@ import Spatial
 
     var heading: Angle2D { useGpsHeading ? gpsHeading : magHeading }
 
-    private(set) var coordination = Double(0)
+    private(set) var coordination: Double?
 
     private(set) var rateOfClimb = Double(0) // feet/min
 
@@ -92,15 +92,12 @@ import Spatial
         gps.startUpdatingLocation()
         gps.startUpdatingHeading()
 
-        manager.deviceMotionUpdateInterval = 1 / 30
         manager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,
                                          to: .main,
                                          withHandler: motionHandler)
-        header.deviceMotionUpdateInterval = 1 / 10
         header.startDeviceMotionUpdates(using: .xMagneticNorthZVertical,
                                         to: .main,
                                         withHandler: headingHandler)
-        manager.accelerometerUpdateInterval = 1 / 30
         manager.startAccelerometerUpdates(to: .main,
                                           withHandler: accelHandler)
         altimeter.startAbsoluteAltitudeUpdates(to: .main, withHandler: altitudeHandler)
@@ -139,8 +136,8 @@ import Spatial
 
         let x = accel.acceleration.x - zeroAccel.acceleration.x
 
-        let beta = Double(0.05)
-        coordination = (x * beta) + (coordination * (1 - beta))
+        let beta = Double(0.02)
+        coordination = (x * beta) + ((coordination ?? x) * (1 - beta))
     }
 
     func altitudeHandler(_ alt: CMAbsoluteAltitudeData?, _ err: Error?) {
@@ -177,7 +174,7 @@ import Spatial
     func zero() {
         zeroAttitude = nil
         zeroAccel = nil
-        coordination = 0
+        coordination = nil
     }
 }
 

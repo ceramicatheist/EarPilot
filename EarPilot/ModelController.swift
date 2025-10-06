@@ -29,7 +29,7 @@ import SwiftUI
             guard let self else {return}
             switch phase {
             case 0: updatePitch(tracker.pitch, idle: true)
-            case 1: updateRoll(tracker.roll, tracker.coordination, idle: true)
+            case 1: updateRoll(tracker.roll, tracker.coordination ?? 0, idle: true)
             case 2: updateHeading(tracker.heading, idle: true)
             default: ()
             }
@@ -57,7 +57,7 @@ import SwiftUI
 
     func watchTracking() -> () {
         withObservationTracking {
-            updateRoll(tracker.roll, tracker.coordination)
+            updateRoll(tracker.roll, tracker.coordination ?? 0)
             updatePitch(tracker.pitch)
             updateHeading(tracker.heading)
         } onChange: {

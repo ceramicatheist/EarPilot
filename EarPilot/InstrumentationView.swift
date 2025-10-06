@@ -31,7 +31,7 @@ struct InstrumentationView: View {
                     altimeter(feet: tracker.altitude,
                               fpm: tracker.rateOfClimb, scale: 0.4)
                 }
-                TurnCoordinator(coordination: tracker.coordination)
+                TurnCoordinator(coordination: tracker.coordination ?? 0)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 2)
                     .padding(.horizontal)
