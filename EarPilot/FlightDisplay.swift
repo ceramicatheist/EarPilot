@@ -114,12 +114,12 @@ struct FlightDisplay: View {
                         Text("GPS").tag(true)
                         Text("Compass").tag(false)
                     } label: {
-                        Text("Heading Source:")
+                        Text("Compass Source:")
                     }
                     .pickerStyle(.segmented)
                     .fixedSize()
                 } label: {
-                    Text("Heading Source:")
+                    Text("Compass Source:")
                 }
             }
             .padding([.top, .horizontal])
